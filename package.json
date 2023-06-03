@@ -1,0 +1,29 @@
+{
+  "name": "ucu-1-2023-bd-obligatorio-backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node ./index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/WalterTano/UCU-1-2023-BD-Obligatorio-Backend.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.213.0",
+    "@aws-sdk/s3-request-presigner": "^3.213.0",
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.20.1",
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "helmet": "^6.0.0",
+    "jsonwebtoken": "^8.5.1",
+    "morgan": "^1.10.0",
+    "multer": "^1.4.5-lts.1"
+  }
+}
