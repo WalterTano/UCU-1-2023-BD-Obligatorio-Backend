@@ -23,7 +23,7 @@ app.use(cors());
 // adding morgan to log HTTP requests
 app.use(morgan('combined'));
 
-app.use("/auth", authRouter);
+app.use(BASE_ROUTE, authRouter);
 
 app.get("/", (req, res) => {
     res.send("Hello world");
