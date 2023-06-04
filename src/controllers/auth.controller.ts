@@ -2,6 +2,8 @@ import bcrypt from 'bcryptjs';
 import { generateJWT } from '../helpers/jwt.helper';
 import { throwIfUndef } from '../lib';
 import { RequestHandler } from 'express';
+import { User } from '../interfaces/user';
+import { findByCredentials, findByUsername } from '../temp';
 
 const BCRYPT_SALT = throwIfUndef(process.env.BCRYPT_SALT, "BCRYPT_SALT");
 
@@ -17,8 +19,7 @@ export const doAuth: RequestHandler = async (req, res) => {
 
     const hashpwd = await bcrypt.hash(password, BCRYPT_SALT);
     // Update this to use the new database.
-    // const user = await findByCredentials(username, hashpwd);
-    const user: unknown = (() => {throw new Error()})();
+    const user = await findByCredentials(username, hashpwd);
 
     if (!user) {
         return res.status(401).json({
@@ -42,8 +43,8 @@ export const renewToken: RequestHandler = async (req, res) => {
     const { username } = req.body;
 
     // Update this to use the new database.
-    // const user = await findByUsername(username);
-
+    const user = await findByUsername(username);
+    
     if (!user) {
         res.status(404).json({
             success: false,

@@ -1,2 +1,0 @@
-Controllers go here.
-Delete this file after creating a controller.
