@@ -1,11 +1,12 @@
-const bcrypt = require('bcryptjs');
+import bcrypt from 'bcryptjs';
+import { generateJWT } from '../helpers/jwt.helper';
+import { throwIfUndef } from '../lib';
+import { RequestHandler } from 'express';
 
-const { generateJWT } = require('../helpers/jwt.helper');
+const BCRYPT_SALT = throwIfUndef(process.env.BCRYPT_SALT, "BCRYPT_SALT");
 
-const BCRYPT_SALT = process.env.BCRYPT_SALT;
-
-const doAuth = async ({ body }, res) => {
-    const { username, password } = body;
+export const doAuth: RequestHandler = async (req, res) => {
+    const { username, password } = req.body;
 
     if (!username || !password) {
         return res.status(400).json({
@@ -17,6 +18,7 @@ const doAuth = async ({ body }, res) => {
     const hashpwd = await bcrypt.hash(password, BCRYPT_SALT);
     // Update this to use the new database.
     // const user = await findByCredentials(username, hashpwd);
+    const user: unknown = (() => {throw new Error()})();
 
     if (!user) {
         return res.status(401).json({
@@ -36,8 +38,8 @@ const doAuth = async ({ body }, res) => {
     });
 };
 
-const renewToken = async (req, res) => {
-    const { username } = req;
+export const renewToken: RequestHandler = async (req, res) => {
+    const { username } = req.body;
 
     // Update this to use the new database.
     // const user = await findByUsername(username);
@@ -58,9 +60,4 @@ const renewToken = async (req, res) => {
             token
         }
     });
-}
-
-module.exports = {
-    doAuth,
-    renewToken
-}
+};

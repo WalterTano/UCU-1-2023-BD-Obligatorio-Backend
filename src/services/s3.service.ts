@@ -1,9 +1,9 @@
-const crypto = require('crypto');
+import crypto from 'crypto';
 
-const { PutObjectCommand, GetObjectCommand, DeleteObjectCommand } = require('@aws-sdk/client-s3');
-const { getSignedUrl } = require('@aws-sdk/s3-request-presigner');
+import { PutObjectCommand, GetObjectCommand, DeleteObjectCommand, GetObjectCommandInput, PutObjectCommandInput } from '@aws-sdk/client-s3';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 
-const { getS3Client } = require("../configs/s3.config");
+import { getS3Client } from "../configs/s3.config";
 
 const BUCKET_NAME = process.env.BUCKET_NAME;
 
@@ -12,8 +12,8 @@ const generateFileName = (bytes = 32) => {
 }
 
 // Generates a temporal signed public url for a specific file key.
-const getUrl = async (fileKey) => {
-    const params = {
+const getUrl = async (fileKey: string | undefined) => {
+    const params: GetObjectCommandInput = {
         Bucket: BUCKET_NAME,
         Key: fileKey
     };
@@ -28,12 +28,18 @@ const getUrl = async (fileKey) => {
     return { success: false };
 };
 
+type PutInS3Args = {
+    buffer: PutObjectCommandInput["Body"],
+    mimetype: PutObjectCommandInput["ContentType"],
+    fileKey: PutObjectCommandInput["Key"]
+};
+
 // Creates or updates a file on the s3 bucket.
 // fileKey is used for matching and updating an existing file.
-const putInS3 = async ({ buffer, mimetype, fileKey }) => {
+const putInS3 = async ({ buffer, mimetype, fileKey }: PutInS3Args) => {
     const key = fileKey ? fileKey : generateFileName();
 
-    const params = {
+    const params: PutObjectCommandInput = {
         Bucket: BUCKET_NAME,
         Key: key,
         Body: buffer,
@@ -52,7 +58,7 @@ const putInS3 = async ({ buffer, mimetype, fileKey }) => {
 };
 
 // Deletes a file with the given fileKey from the s3 bucket.
-const deleteFromS3 = async (fileKey) => {
+const deleteFromS3 = async (fileKey: string | undefined) => {
     const params = {
         Bucket: BUCKET_NAME,
         Key: fileKey
