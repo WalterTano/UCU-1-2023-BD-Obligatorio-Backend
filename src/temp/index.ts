@@ -1,6 +1,6 @@
 import { User } from "../interfaces/user";
 import bcrypt from 'bcryptjs';
-import { takeFirst } from "../lib";
+import { takeFirst, throwIfUndef } from "../lib";
 
 const BCRYPT_SALT = throwIfUndef(process.env.BCRYPT_SALT, "BCRYPT_SALT");
 
