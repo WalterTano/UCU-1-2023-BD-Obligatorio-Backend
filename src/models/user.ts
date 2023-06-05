@@ -11,7 +11,10 @@ export class User {
         public hashpwd: string,
         public geoDistance: number,
         public geoState: boolean,
-        public isAdmin: boolean
+        public isAdmin: boolean,
+        public telephones: number[] = [],
+        public emails: string[] = [],
+        public addresses: string[] = []
     ) {}
 
     public update(other: User): void {
@@ -21,6 +24,24 @@ export class User {
         this.geoDistance = other.geoDistance;
         this.geoState = other.geoState;
         this.isAdmin = other.isAdmin;
+        this.telephones = other.telephones.map(v => v);
+        this.emails = other.emails.map(v => v);
+        this.addresses = other.addresses.map(v => v);
+    }
+
+    public clone(): User {
+        return new User(
+            this.ci,
+            this.name,
+            this.lastName,
+            this.hashpwd,
+            this.geoDistance,
+            this.geoState,
+            this.isAdmin,
+            this.telephones.map(v => v),
+            this.emails.map(v => v),
+            this.addresses.map(v => v)
+        );
     }
 
 }
