@@ -7,6 +7,7 @@ export class User {
         public readonly ci: number,
         public name: string,
         public lastName: string,
+        // Should it be handled more carefully?
         public hashpwd: string,
         public geoDistance: number,
         public geoState: boolean,
