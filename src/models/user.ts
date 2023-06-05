@@ -1,6 +1,19 @@
-import { User } from "../interfaces/user";
 import bcrypt from 'bcryptjs';
 import { takeFirst, throwIfUndef } from "../lib";
+
+export class User {
+
+    public constructor(
+        public readonly ci: number,
+        public name: string,
+        public lastName: string,
+        public hashpwd: string,
+        public geoDistance: number,
+        public geoState: boolean,
+        public isAdmin: boolean
+    ) {}
+
+}
 
 const BCRYPT_SALT = throwIfUndef(process.env.BCRYPT_SALT, "BCRYPT_SALT");
 
@@ -12,14 +25,14 @@ async function getUsers(): Promise<User[]> {
     }
 
     // Define raw users (with plain-text password)
-    const raw: {name: string, password: string}[] = [
-        {name: "John", password: "12345"}
+    const raw: {ci: number, name: string, lastName: "Doe", password: string}[] = [
+        {ci: 28547613, name: "John", lastName: "Doe", password: "12345"}
     ];
 
     // Map password
     const res: User[] = await Promise.all(
         raw.map(u => bcrypt.hash(u.password, BCRYPT_SALT).then(
-            hashpwd => ({name: u.name, hashpwd})
+            hashpwd => new User(u.ci, u.name, u.lastName, hashpwd, 0, false, false)
         ))
     );
 
