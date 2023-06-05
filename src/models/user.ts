@@ -13,6 +13,15 @@ export class User {
         public isAdmin: boolean
     ) {}
 
+    public update(other: User): void {
+        this.name = other.name;
+        this.lastName = other.lastName;
+        this.hashpwd = other.hashpwd;
+        this.geoDistance = other.geoDistance;
+        this.geoState = other.geoState;
+        this.isAdmin = other.isAdmin;
+    }
+
 }
 
 const BCRYPT_SALT = throwIfUndef(process.env.BCRYPT_SALT, "BCRYPT_SALT");
@@ -37,6 +46,10 @@ async function getUsers(): Promise<User[]> {
     );
 
     return res;
+}
+
+function setUsers(newUsers: User[]): void {
+    users = newUsers;
 }
 
 export async function findByCredentials(username: string, hashpwd: string): Promise<User> {
@@ -69,4 +82,40 @@ export async function findByUsername(username: string): Promise<User> {
     const user = v2[0];
 
     return user;
+}
+
+export async function newUser(user: User): Promise<void> {
+    const users = await getUsers();
+
+    // CI must be unique
+    if (users.filter(u => u.ci == user.ci).length > 0) {
+        throw new Error("There's already another user with the same CI");
+    }
+
+    users.push(user);
+}
+
+export async function updateUser(ci: number, user: User): Promise<"Success" | "Not found"> {
+    const users = await getUsers();
+
+    // Search for matching CI
+    const matchCI = users.filter(u => u.ci == ci);
+    if (matchCI.length == 0) {
+        return "Not found";
+    }
+    const userToUpdate = matchCI[0];
+
+    userToUpdate.update(user);
+    return "Success";
+}
+
+export async function deleteUser(ci: number): Promise<"Success" | "Not found"> {
+    const users = await getUsers();
+
+    const [newUsers, found] = users.reduce<[User[], boolean]>(
+        ([acc, found], u) => u.ci == ci ? [acc, true] : [[...acc, u], found], [[], false]
+    );
+
+    setUsers(newUsers);
+    return found ? "Success" : "Not found";
 }
