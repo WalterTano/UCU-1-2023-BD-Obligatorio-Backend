@@ -1,56 +1,12 @@
 import bcrypt from 'bcryptjs';
 import { takeFirst, throwIfUndef } from "../lib";
-
-export class User {
-
-    public constructor(
-        public readonly ci: number,
-        public name: string,
-        public lastName: string,
-        // Should it be handled more carefully?
-        public hashpwd: string,
-        public geoDistance: number,
-        public geoState: boolean,
-        public isAdmin: boolean,
-        public telephones: number[] = [],
-        public emails: string[] = [],
-        public addresses: string[] = []
-    ) {}
-
-    public update(other: User): void {
-        this.name = other.name;
-        this.lastName = other.lastName;
-        this.hashpwd = other.hashpwd;
-        this.geoDistance = other.geoDistance;
-        this.geoState = other.geoState;
-        this.isAdmin = other.isAdmin;
-        this.telephones = other.telephones.map(v => v);
-        this.emails = other.emails.map(v => v);
-        this.addresses = other.addresses.map(v => v);
-    }
-
-    public clone(): User {
-        return new User(
-            this.ci,
-            this.name,
-            this.lastName,
-            this.hashpwd,
-            this.geoDistance,
-            this.geoState,
-            this.isAdmin,
-            this.telephones.map(v => v),
-            this.emails.map(v => v),
-            this.addresses.map(v => v)
-        );
-    }
-
-}
+import { User } from '../classes/user';
 
 const BCRYPT_SALT = throwIfUndef(process.env.BCRYPT_SALT, "BCRYPT_SALT");
 
 let users: User[] | undefined;
 
-async function getUsers(): Promise<User[]> {
+export async function getUsers(): Promise<User[]> {
     if (users) {
         return users;
     }

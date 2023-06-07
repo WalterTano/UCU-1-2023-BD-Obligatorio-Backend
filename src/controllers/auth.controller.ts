@@ -2,7 +2,6 @@ import bcrypt from 'bcryptjs';
 import { generateJWT } from '../helpers/jwt.helper';
 import { throwIfUndef } from '../lib';
 import { RequestHandler } from 'express';
-import { User } from '../interfaces/user';
 import { findByCredentials, findByUsername } from '../models/user';
 
 const BCRYPT_SALT = throwIfUndef(process.env.BCRYPT_SALT, "BCRYPT_SALT");
