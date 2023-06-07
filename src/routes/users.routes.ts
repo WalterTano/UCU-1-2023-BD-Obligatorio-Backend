@@ -1,6 +1,5 @@
 import { Router } from "express";
-import { getUsers, getUser, postUser, putUser } from "../controllers/users.controller";
-import { deleteUser } from "../models/user";
+import { getUsers, getUser, postUser, putUser, deleteUser } from "../controllers/users.controller";
 
 const BASE_ROUTE = '/users';
 const router = Router();
