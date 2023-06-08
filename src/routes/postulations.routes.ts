@@ -3,11 +3,11 @@ import { deleteSkill, getSkill, getSkills, postSkill, putSkill } from "../contro
 
 
 const router = Router();
-const BASE_ROUTE = '/skills';
+const BASE_ROUTE = '/postulations';
 
 router.get(BASE_ROUTE, getSkills);
 
-router.get(`${BASE_ROUTE}/:skId`, getSkill);
+router.get(`${BASE_ROUTE}/:posId`, getSkill);
 
 router.post(BASE_ROUTE, postSkill);
 
@@ -15,4 +15,4 @@ router.put(`${BASE_ROUTE}/:skId`, putSkill);
 
 router.delete(`${BASE_ROUTE}/:skId`, deleteSkill);
 
-export const skillRouter: RequestHandler<{userId: string}> = router;
+export const postulationRouter: RequestHandler = router;
