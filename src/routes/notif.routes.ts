@@ -14,12 +14,12 @@ const router = Router();
 
 router.get(BASE_ROUTE, getNotifs);
 
-router.get(`${BASE_ROUTE}/:id`, getNotif);
+router.get(`${BASE_ROUTE}/:notifId`, getNotif);
 
 router.post(BASE_ROUTE, postNotif);
 
-router.put(`${BASE_ROUTE}/:id`, putNotif);
+router.put(`${BASE_ROUTE}/:notifId`, putNotif);
 
-router.delete(`${BASE_ROUTE}/:id`, deleteNotif);
+router.delete(`${BASE_ROUTE}/:notifId`, deleteNotif);
 
 export { router as notifsRouter };

@@ -14,4 +14,4 @@ router.put(`${BASE_ROUTE}/:necId`, putNecessity);
 
 router.delete(`${BASE_ROUTE}/:necId`, deleteNecessity);
 
-export const necessityRouter: RequestHandler<{id: string}> = router;
+export const necessityRouter: RequestHandler<{userId: string}> = router;

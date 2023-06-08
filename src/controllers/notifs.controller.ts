@@ -6,7 +6,7 @@ export const getNotifs: RequestHandler = async (req, res) => {
     res.status(500).send("Not implemented yet");
 };
 
-export const getNotif: RequestHandler<{id: string}> = async (req, res) => {
+export const getNotif: RequestHandler<{notifId: string}> = async (req, res) => {
     res.status(500).send("Not implemented yet");
 };
 
@@ -14,10 +14,10 @@ export const postNotif: RequestHandler = async (req, res) => {
     res.status(500).send("Not implemented yet");
 };
 
-export const putNotif: RequestHandler<{id: string}> = async (req, res) => {
+export const putNotif: RequestHandler<{notifId: string}> = async (req, res) => {
     res.status(500).send("Not implemented yet");
 };
 
-export const deleteNotif: RequestHandler<{id: string}> = async (req, res) => {
+export const deleteNotif: RequestHandler<{notifId: string}> = async (req, res) => {
     res.status(500).send("Not implemented yet");
 };

@@ -8,15 +8,15 @@ const router = Router();
 
 router.get(BASE_ROUTE, getUsers);
 
-router.use(`${BASE_ROUTE}/:id`, necessityRouter);
-router.use(`${BASE_ROUTE}/:id`, skillRouter);
+router.use(`${BASE_ROUTE}/:userId`, necessityRouter);
+router.use(`${BASE_ROUTE}/:userId`, skillRouter);
 
-router.get(`${BASE_ROUTE}/:id`, getUser);
+router.get(`${BASE_ROUTE}/:userId`, getUser);
 
 router.post(BASE_ROUTE, postUser);
 
-router.put(`${BASE_ROUTE}/:id`, putUser);
+router.put(`${BASE_ROUTE}/:userId`, putUser);
 
-router.delete(`${BASE_ROUTE}/:id`, deleteUser);
+router.delete(`${BASE_ROUTE}/:userId`, deleteUser);
 
 export { router as usersRouter };
