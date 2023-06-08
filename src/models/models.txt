@@ -1,2 +1,0 @@
-Models (all files which interact with the database) go here.
-Delete this file after creating a model.
