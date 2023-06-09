@@ -1,8 +1,5 @@
 import { Router } from "express";
 import { getUsers, getUser, postUser, putUser, deleteUser } from "../controllers/users.controller";
-import { necessityRouter } from "./necessity.routes";
-import { skillRouter } from "./skill.routes";
-import { postulationRouter } from "./postulations.routes";
 
 const BASE_ROUTE = '/users';
 const router = Router();

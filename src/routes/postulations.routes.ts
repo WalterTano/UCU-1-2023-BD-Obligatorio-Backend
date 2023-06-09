@@ -14,8 +14,8 @@ router.get(`${BASE_ROUTE}/:posId`, getSkill);
 
 router.post(BASE_ROUTE, postSkill);
 
-router.put(`${BASE_ROUTE}/:skId`, putSkill);
+router.put(`${BASE_ROUTE}/:skillId`, putSkill);
 
-router.delete(`${BASE_ROUTE}/:skId`, deleteSkill);
+router.delete(`${BASE_ROUTE}/:skillId`, deleteSkill);
 
 export const postulationRouter: RequestHandler = router;

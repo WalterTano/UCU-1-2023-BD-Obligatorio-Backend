@@ -7,12 +7,12 @@ const BASE_ROUTE = '/users/:userId/skills';
 
 router.get(BASE_ROUTE, getSkills);
 
-router.get(`${BASE_ROUTE}/:skId`, getSkill);
+router.get(`${BASE_ROUTE}/:skillId`, getSkill);
 
 router.post(BASE_ROUTE, postSkill);
 
-router.put(`${BASE_ROUTE}/:skId`, putSkill);
+router.put(`${BASE_ROUTE}/:skillId`, putSkill);
 
-router.delete(`${BASE_ROUTE}/:skId`, deleteSkill);
+router.delete(`${BASE_ROUTE}/:skillId`, deleteSkill);
 
 export const skillRouter: RequestHandler<{userId: string}> = router;
