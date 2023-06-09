@@ -1,4 +1,4 @@
-import { Condition } from "../condition";
+import { Condition } from "./condition";
 
 // SELECT <columns> FROM <table> WHERE <conditions> ORDER BY <orderCols> LIMIT <limit>;
 export interface SelectQuery {
