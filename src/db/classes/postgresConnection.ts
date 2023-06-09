@@ -1,5 +1,4 @@
-import { Sql } from "postgres";
-import sqlRawConnection from "../../configs/db.config";
+import postgres, { Sql } from "postgres";
 import { DatabaseConnection } from "../interfaces/databaseConnection";
 import { Result } from "../types/result";
 import { conditionsToSql } from "../helpers/conditionsToSql";
@@ -10,11 +9,14 @@ import { SelectQuery } from "../interfaces/selectQuery";
 import { InsertQuery } from "../interfaces/insertQuery";
 import { UpdateQuery } from "../interfaces/updateQuery";
 import { DeleteQuery } from "../interfaces/deleteQuery";
+import { PostgresConfig } from "../interfaces/postgresInput";
 
 export class PostgresConnection implements DatabaseConnection {
-    public static readonly instance: DatabaseConnection = new PostgresConnection(sqlRawConnection);
+    private readonly sql: Sql;
 
-    public constructor(private readonly sql: Sql) { }
+    public constructor(config: PostgresConfig) {
+        this.sql = postgres(config);
+    }
 
     select(q: SelectQuery): Promise<Result<any[]>> {
         const sqlCols = q.columns ? this.sql(q.columns) : this.sql`*`;
