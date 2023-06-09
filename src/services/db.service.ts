@@ -1,6 +1,8 @@
 import sql from "../configs/db.config";
 import postgres from 'postgres';
 
+type Result<T> = { success: true, data: T } | { success: false, errorMsg: string };
+
 export interface GenericData {
     [index: string]: any
 }
@@ -38,7 +40,7 @@ export class TupleRef {
 /*
 Example: await selectAll("alumnos");
 */
-export function selectAll(table: string): SqlResult {
+export function selectAll(table: string): Promise<postgres.Row[]> {
     return sql`SELECT * FROM ${sql(table)}`;
 }
 
@@ -61,8 +63,14 @@ Example: await insert("alumnos", {
     docid: "d11000"
 });
 */
-export async function insert(table: string, values: GenericData): Promise<void> {
-    await sql`INSERT INTO ${sql(table)} ${sql(values)}`;
+export async function insert(table: string, values: GenericData): Promise<Result<void>> {
+    try {
+        await sql`INSERT INTO ${sql(table)} ${sql(values)}`;
+        return { success: true, data: void 0 };
+    } catch(e) {
+        const msg = e instanceof Error ? e.message : (e as any).toString();
+        return { success: false, errorMsg: msg };
+    }
 }
 
 /*
@@ -71,9 +79,15 @@ Example: await update(
     { apealu: "aa11000" }
 )
 */
-export async function update(table: TupleRef, values: GenericData): Promise<void> {
+export async function update(table: TupleRef, values: GenericData): Promise<Result<number>> {
     const filter = table.idsToFilter();
-    await sql`UPDATE ${sql(table.name)} SET ${sql(values)} ${filter}`;
+    try {
+        const res = await sql`UPDATE ${sql(table.name)} SET ${sql(values)} ${filter} returning 1`;
+        return { success: true, data: res.length };
+    } catch(e) {
+        const msg = e instanceof Error ? e.message : (e as any).toString();
+        return { success: false, errorMsg: msg };
+    }
 }
 
 /*
@@ -81,7 +95,13 @@ Example: await remove(
     new TupleRef("alumnos", [["idalu", 10001]])
 )
 */
-export async function remove(table: TupleRef): Promise<void> {
+export async function remove(table: TupleRef): Promise<Result<number>> {
     const filter = table.idsToFilter();
-    await sql`DELETE FROM ${sql(table.name)} ${filter}`;
+    try {
+        const res = await sql`DELETE FROM ${sql(table.name)} ${filter} returning 1`;
+        return { success: true, data: res.length };
+    } catch(e) {
+        const msg = e instanceof Error ? e.message : (e as any).toString();
+        return { success: false, errorMsg: msg };
+    }
 }
