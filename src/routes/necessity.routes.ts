@@ -2,7 +2,7 @@ import { RequestHandler, Router } from "express";
 import { deleteNecessity, getNecessities, getNecessity, postNecessity, putNecessity } from "../controllers/necessities.controller";
 
 const router = Router();
-const BASE_ROUTE = '/necessities';
+const BASE_ROUTE = '/users/:userId/necessities';
 
 router.get(BASE_ROUTE, getNecessities);
 

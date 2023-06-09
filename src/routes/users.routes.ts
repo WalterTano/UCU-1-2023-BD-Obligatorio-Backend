@@ -9,10 +9,6 @@ const router = Router();
 
 router.get(BASE_ROUTE, getUsers);
 
-router.use(`${BASE_ROUTE}/:userId`, necessityRouter);
-router.use(`${BASE_ROUTE}/:userId`, skillRouter);
-router.use(`${BASE_ROUTE}/:userId`, postulationRouter);
-
 router.get(`${BASE_ROUTE}/:userId`, getUser);
 
 router.post(BASE_ROUTE, postUser);

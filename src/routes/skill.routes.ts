@@ -3,7 +3,7 @@ import { deleteSkill, getSkill, getSkills, postSkill, putSkill } from "../contro
 
 
 const router = Router();
-const BASE_ROUTE = '/skills';
+const BASE_ROUTE = '/users/:userId/skills';
 
 router.get(BASE_ROUTE, getSkills);
 
