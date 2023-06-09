@@ -1,5 +1,4 @@
 import { RequestHandler } from "express";
-import { getUsers as getUsersModel } from "../models/user";
 
 
 export const getNotifications: RequestHandler = async (req, res) => {
