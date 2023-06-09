@@ -55,23 +55,44 @@ export class PostgresConnection implements DatabaseConnection {
     select(q: SelectQuery): Promise<Result<any[]>> {
         const sqlCols = q.columns ? sql(q.columns) : sql`*`;
         const sqlTable = sql(q.table);
-        const sqlConds = conditionsToSql(q.conditions);
+        const sqlConditions = conditionsToSql(q.conditions);
         const sqlOrder = orderColsToSql(q.orderCols);
         const sqlLimit = limitToSql(q.limit);
-        
+
         return resFromPromise(
-            sql`SELECT ${sqlCols} FROM ${sqlTable} ${sqlConds} ${sqlOrder} ${sqlLimit}`
+            sql`SELECT ${sqlCols} FROM ${sqlTable} ${sqlConditions} ${sqlOrder} ${sqlLimit}`
         );
     }
 
     insert(q: InsertQuery): Promise<Result<void>> {
-        throw new Error("Method not implemented.");
+        const sqlTable = sql(q.table);
+        const sqlValues = sql(q.values);
+
+        return resFromPromise(
+            sql`INSERT INTO ${sqlTable} ${sqlValues}`
+                .then(_ => { })
+        );
     }
+
     update(q: UpdateQuery): Promise<Result<number>> {
-        throw new Error("Method not implemented.");
+        const sqlTable = sql(q.table);
+        const sqlValues = sql(q.values);
+        const sqlConditions = conditionsToSql(q.conditions);
+
+        return resFromPromise(
+            sql`UPDATE ${sqlTable} SET ${sqlValues} ${sqlConditions} RETURNING 1`
+                .then(rows => rows.length)
+        );
     }
+
     delete(q: DeleteQuery): Promise<Result<number>> {
-        throw new Error("Method not implemented.");
+        const sqlTable = sql(q.table);
+        const sqlConditions = conditionsToSql(q.conditions);
+
+        return resFromPromise(
+            sql`DELETE FROM ${sqlTable} ${sqlConditions} RETURNING 1`
+                .then(rows => rows.length)
+        );
     }
 
 }
@@ -80,7 +101,7 @@ async function resFromPromise<T>(promise: Promise<T>): Promise<Result<T>> {
     try {
         const res = await promise;
         return { success: true, data: res };
-    } catch(e) {
+    } catch (e) {
         const msg = e instanceof Error ? e.message : (e as any).toString();
         return { success: false, errorMsg: msg };
     }
@@ -102,7 +123,7 @@ function conditionToSql(c: Condition): PendingQuery<any> {
     return sql`${sql(c.column)} ${operationsMap[c.operation]} ${c.value}`;
 }
 
-function conditionsToSql(conditions?: Condition[]): PendingQuery<any> {
+export function conditionsToSql(conditions?: Condition[]): PendingQuery<any> {
     if (conditions == undefined) {
         return sql``;
     }
@@ -111,9 +132,9 @@ function conditionsToSql(conditions?: Condition[]): PendingQuery<any> {
     for (const c of conditions) {
         const sqlCondition = conditionToSql(c);
         if (res != undefined) {
-            res = sql`${res} and ${sqlCondition}`;
+            res = sql`${res} AND ${sqlCondition}`;
         } else {
-            res = sql`where ${sqlCondition}`;
+            res = sql`WHERE ${sqlCondition}`;
         }
     }
 
