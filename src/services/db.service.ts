@@ -123,7 +123,7 @@ function conditionToSql(c: Condition): PendingQuery<any> {
     return sql`${sql(c.column)} ${operationsMap[c.operation]} ${c.value}`;
 }
 
-export function conditionsToSql(conditions?: Condition[]): PendingQuery<any> {
+function conditionsToSql(conditions?: Condition[]): PendingQuery<any> {
     if (conditions == undefined) {
         return sql``;
     }
