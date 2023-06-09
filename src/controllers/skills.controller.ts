@@ -1,22 +1,21 @@
-import { RequestHandler } from "express";
+import { Handler } from "./lib";
 
-
-export const getSkills: RequestHandler<{userId: string}> = async (req, res) => {
+export const getSkills: Handler<["userId"]> = async (req, res) => {
     res.status(500).send("Not implemented yet");
 };
 
-export const getSkill: RequestHandler<{userId: string, skillId: string}> = async (req, res) => {
+export const getSkill: Handler<["userId", "skillId"]> = async (req, res) => {
     res.status(500).send("Not implemented yet");
 };
 
-export const postSkill: RequestHandler<{userId: string}> = async (req, res) => {
+export const postSkill: Handler<["userId"]> = async (req, res) => {
     res.status(500).send("Not implemented yet");
 };
 
-export const putSkill: RequestHandler<{userId: string, skillId: string}> = async (req, res) => {
+export const putSkill: Handler<["userId", "skillId"]> = async (req, res) => {
     res.status(500).send("Not implemented yet");
 };
 
-export const deleteSkill: RequestHandler<{userId: string, skillId: string}> = async (req, res) => {
+export const deleteSkill: Handler<["userId", "skillId"]> = async (req, res) => {
     res.status(500).send("Not implemented yet");
 };

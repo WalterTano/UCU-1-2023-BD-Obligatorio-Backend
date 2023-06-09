@@ -1,22 +1,21 @@
-import { RequestHandler } from "express";
+import { Handler } from "./lib";
 
-
-export const getPostulations: RequestHandler = async (req, res) => {
+export const getPostulations: Handler<[]> = async (req, res) => {
     res.status(500).send("Not implemented yet");
 };
 
-export const getPostulation: RequestHandler<{posId: string}> = async (req, res) => {
+export const getPostulation: Handler<["posId"]> = async (req, res) => {
     res.status(500).send("Not implemented yet");
 };
 
-export const postPostulation: RequestHandler = async (req, res) => {
+export const postPostulation: Handler<[]> = async (req, res) => {
     res.status(500).send("Not implemented yet");
 };
 
-export const putPostulation: RequestHandler<{posId: string}> = async (req, res) => {
+export const putPostulation: Handler<["posId"]> = async (req, res) => {
     res.status(500).send("Not implemented yet");
 };
 
-export const deletePostulation: RequestHandler<{posId: string}> = async (req, res) => {
+export const deletePostulation: Handler<["posId"]> = async (req, res) => {
     res.status(500).send("Not implemented yet");
 };

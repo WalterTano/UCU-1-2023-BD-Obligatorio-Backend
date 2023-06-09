@@ -1,22 +1,21 @@
-import { RequestHandler } from "express";
+import { Handler } from "./lib";
 
-
-export const getNotifications: RequestHandler = async (req, res) => {
+export const getNotifications: Handler<[]> = async (req, res) => {
     res.status(500).send("Not implemented yet");
 };
 
-export const getNotification: RequestHandler<{notifId: string}> = async (req, res) => {
+export const getNotification: Handler<["notifId"]> = async (req, res) => {
     res.status(500).send("Not implemented yet");
 };
 
-export const postNotification: RequestHandler = async (req, res) => {
+export const postNotification: Handler<[]> = async (req, res) => {
     res.status(500).send("Not implemented yet");
 };
 
-export const putNotification: RequestHandler<{notifId: string}> = async (req, res) => {
+export const putNotification: Handler<["notifId"]> = async (req, res) => {
     res.status(500).send("Not implemented yet");
 };
 
-export const deleteNotification: RequestHandler<{notifId: string}> = async (req, res) => {
+export const deleteNotification: Handler<["notifId"]> = async (req, res) => {
     res.status(500).send("Not implemented yet");
 };
