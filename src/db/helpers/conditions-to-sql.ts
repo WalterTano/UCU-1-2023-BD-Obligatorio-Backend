@@ -1,15 +1,5 @@
-import { Condition, Result } from "./interfaces";
-import { MaybeRow, PendingQuery, Sql } from "postgres";
-
-export async function resFromPromise<T>(promise: Promise<T>): Promise<Result<T>> {
-    try {
-        const res = await promise;
-        return { success: true, data: res };
-    } catch (e) {
-        const msg = e instanceof Error ? e.message : (e as any).toString();
-        return { success: false, errorMsg: msg };
-    }
-}
+import { PendingQuery, Sql } from "postgres";
+import { Condition } from "../interfaces/condition";
 
 const operationsMap: {
     [index in Condition["operation"]]: (sql: Sql) => PendingQuery<any>
@@ -36,7 +26,7 @@ export function conditionsToSql(sql: Sql, conditions?: Condition[]): PendingQuer
         return sql``;
     }
 
-    let res: PendingQuery<MaybeRow[]> | undefined;
+    let res: PendingQuery<any> | undefined;
     for (const c of conditions) {
         const sqlCondition = conditionToSql(sql, c);
         if (res != undefined) {
@@ -49,18 +39,3 @@ export function conditionsToSql(sql: Sql, conditions?: Condition[]): PendingQuer
     return res || sql``;
 }
 
-export function orderColsToSql(sql: Sql, cols?: string[]): PendingQuery<any> {
-    if (cols == undefined || cols.length == 0) {
-        return sql``;
-    }
-
-    return sql`ORDER BY ${sql(cols)}`;
-}
-
-export function limitToSql(sql: Sql, limit?: number): PendingQuery<any> {
-    if (limit == undefined) {
-        return sql``;
-    }
-
-    return sql`LIMIT ${limit}`;
-}

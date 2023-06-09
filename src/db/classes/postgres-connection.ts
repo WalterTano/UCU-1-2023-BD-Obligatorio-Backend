@@ -1,7 +1,15 @@
 import { Sql } from "postgres";
-import { DatabaseConnection, DeleteQuery, InsertQuery, Result, SelectQuery, UpdateQuery } from "./interfaces";
-import { conditionsToSql, limitToSql, orderColsToSql, resFromPromise } from "./helpers";
-import sqlRawConnection from "../configs/db.config";
+import sqlRawConnection from "../../configs/db.config";
+import { DatabaseConnection } from "../interfaces/database-connection";
+import { Result } from "../interfaces/result";
+import { conditionsToSql } from "../helpers/conditions-to-sql";
+import { orderColsToSql } from "../helpers/order-cols-to-sql";
+import { limitToSql } from "../helpers/limit-to-sql";
+import { resFromPromise } from "../helpers/res-from-promise";
+import { SelectQuery } from "../interfaces/queries/select";
+import { InsertQuery } from "../interfaces/queries/insert";
+import { UpdateQuery } from "../interfaces/queries/update";
+import { DeleteQuery } from "../interfaces/queries/delete";
 
 export class PostgresConnection implements DatabaseConnection {
     public static readonly instance: DatabaseConnection = new PostgresConnection(sqlRawConnection);
