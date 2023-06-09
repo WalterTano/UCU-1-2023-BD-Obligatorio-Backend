@@ -86,27 +86,41 @@ async function resFromPromise<T>(promise: Promise<T>): Promise<Result<T>> {
     }
 }
 
-function conditionToSql(c: Condition): PendingQuery<readonly MaybeRow[]> {
-    return sql`${sql(c.column)} ${sql(c.operation)} ${c.value}`;
+const operationsMap: {
+    [index in Condition["operation"]]: PendingQuery<any>
+} = {
+    "<": sql`<`,
+    ">": sql`>`,
+    "=": sql`=`,
+    "<=": sql`<=`,
+    ">=": sql`>=`,
+    "IN": sql`IN`,
+    "LIKE": sql`LIKE`
+};
+
+function conditionToSql(c: Condition): PendingQuery<any> {
+    return sql`${sql(c.column)} ${operationsMap[c.operation]} ${c.value}`;
 }
 
-function conditionsToSql(conditions?: Condition[]): PendingQuery<readonly MaybeRow[]> {
+function conditionsToSql(conditions?: Condition[]): PendingQuery<any> {
     if (conditions == undefined) {
         return sql``;
     }
 
     let res: PendingQuery<MaybeRow[]> | undefined;
     for (const c of conditions) {
+        const sqlCondition = conditionToSql(c);
         if (res != undefined) {
-            const sqlCondition = conditionToSql(c);
             res = sql`${res} and ${sqlCondition}`;
+        } else {
+            res = sql`where ${sqlCondition}`;
         }
     }
 
     return res || sql``;
 }
 
-function orderColsToSql(cols?: string[]): PendingQuery<readonly MaybeRow[]> {
+function orderColsToSql(cols?: string[]): PendingQuery<any> {
     if (cols == undefined || cols.length == 0) {
         return sql``;
     }
@@ -114,7 +128,7 @@ function orderColsToSql(cols?: string[]): PendingQuery<readonly MaybeRow[]> {
     return sql`ORDER BY ${sql(cols)}`;
 }
 
-function limitToSql(limit?: number): PendingQuery<readonly MaybeRow[]> {
+function limitToSql(limit?: number): PendingQuery<any> {
     if (limit == undefined) {
         return sql``;
     }
