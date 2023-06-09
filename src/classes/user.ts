@@ -1,23 +1,43 @@
+/*
+(Recurso)
+Usuario:
+	CI
+    username (único)
+	Departamento (Nombre)
+    Contraseña (almacenar aparte)
+	Nombres
+	Apellidos
+	Medios de contacto
+	Foto CI (almacenar aparte)
+	Geo distancia
+	Geo estado
+	¿Es admin?
+
+(Sub-objeto)
+Medios de contacto:
+	Direcciones
+	Teléfonos
+	Emails
+*/
+
+type Address = string;
+type Telephone = string;
+type Email = string;
+
+type Contact = {addr: Address} | {tel: Telephone} | {email: Email};
+
 export class User {
 
     public constructor(
         public readonly ci: number,
-        public name: string,
-        public lastName: string,
-        // Should it be handled more carefully?
-        public hashpwd: string,
+        public username: string,
+        public department: string,
+        public firstNames: string,
+        public lastNames: string,
         public geoDistance: number,
         public geoState: boolean,
-        public isAdmin: boolean
+        public isAdmin: boolean,
+        public contacts: Contact[]
     ) {}
-
-    public update(other: User): void {
-        this.name = other.name;
-        this.lastName = other.lastName;
-        this.hashpwd = other.hashpwd;
-        this.geoDistance = other.geoDistance;
-        this.geoState = other.geoState;
-        this.isAdmin = other.isAdmin;
-    }
 
 }

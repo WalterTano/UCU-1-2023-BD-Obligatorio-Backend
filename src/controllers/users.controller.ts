@@ -7,7 +7,7 @@ export const getUsers: RequestHandler = async (req, res) => {
     res.send(users);
 };
 
-export const getUser: RequestHandler<{id: string}> = async (req, res) => {
+export const getUser: RequestHandler<{userId: string}> = async (req, res) => {
     res.status(500).send("Not implemented yet");
 };
 
@@ -15,10 +15,10 @@ export const postUser: RequestHandler = async (req, res) => {
     res.status(500).send("Not implemented yet");
 };
 
-export const putUser: RequestHandler<{id: string}> = async (req, res) => {
+export const putUser: RequestHandler<{userId: string}> = async (req, res) => {
     res.status(500).send("Not implemented yet");
 };
 
-export const deleteUser: RequestHandler<{id: string}> = async (req, res) => {
+export const deleteUser: RequestHandler<{userId: string}> = async (req, res) => {
     res.status(500).send("Not implemented yet");
 };

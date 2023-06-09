@@ -1,4 +1,4 @@
-import { RequestHandler } from "express";
+
 import jwt from 'jsonwebtoken';
 import { throwIfUndef } from "../lib";
 

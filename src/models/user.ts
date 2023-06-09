@@ -5,36 +5,45 @@ import { User } from '../classes/user';
 const BCRYPT_SALT = throwIfUndef(process.env.BCRYPT_SALT, "BCRYPT_SALT");
 
 let users: User[] | undefined;
+let passwords: { [index: string]: string | undefined };
 
 export async function getUsers(): Promise<User[]> {
-    if (users) {
-        return users;
+    if (!users) {
+        users = [];
     }
 
-    // Define raw users (with plain-text password)
-    const raw: {ci: number, name: string, lastName: "Doe", password: string}[] = [
-        {ci: 28547613, name: "John", lastName: "Doe", password: "12345"}
-    ];
-
-    // Map password
-    const res: User[] = await Promise.all(
-        raw.map(u => bcrypt.hash(u.password, BCRYPT_SALT).then(
-            hashpwd => new User(u.ci, u.name, u.lastName, hashpwd, 0, false, false)
-        ))
-    );
-
-    return res;
+    return users;
 }
 
 function setUsers(newUsers: User[]): void {
     users = newUsers;
 }
 
+export async function getPassword(username: string): Promise<string> {
+    if (!passwords) {
+        passwords = {};
+    }
+
+    const res = passwords[username];
+    if (res == undefined) {
+        throw new Error(`The user ${JSON.stringify(username)} does not exist`);
+    }
+    return res;
+}
+
 export async function findByCredentials(username: string, hashpwd: string): Promise<User> {
     const users = await getUsers();
 
-    // The list of users which match the username and password
-    const v1 = users.filter(u => u.name == username && u.hashpwd == hashpwd);
+    // Check whether the passwords match
+    const actualPwd = await getPassword(username)
+        .catch(() => { throw new Error("There's no user with given credentials") });
+    
+    if (actualPwd != hashpwd) {
+        throw new Error("There's no user with given credentials");
+    }
+
+    // The list of users which match the username
+    const v1 = users.filter(u => u.username == username);
 
     // Attempt to take the first element
     const v2: readonly [User, readonly User[]] | undefined = takeFirst(v1);
@@ -50,7 +59,7 @@ export async function findByUsername(username: string): Promise<User> {
     const users = await getUsers();
 
     // The list of users which match the username
-    const v1 = users.filter(u => u.name == username);
+    const v1 = users.filter(u => u.username == username);
 
     // Attempt to take the first element
     const v2: readonly [User, readonly User[]] | undefined = takeFirst(v1);
@@ -62,7 +71,8 @@ export async function findByUsername(username: string): Promise<User> {
     return user;
 }
 
-export async function newUser(user: User): Promise<void> {
+// The password does not go with the User object in this layer
+export async function newUser(user: User, hashpwd: string): Promise<void> {
     const users = await getUsers();
 
     // CI must be unique
@@ -83,7 +93,7 @@ export async function updateUser(ci: number, user: User): Promise<"Success" | "N
     }
     const userToUpdate = matchCI[0];
 
-    userToUpdate.update(user);
+//    userToUpdate.update(user);
     return "Success";
 }
 
