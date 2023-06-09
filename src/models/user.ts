@@ -1,6 +1,7 @@
 import bcrypt from 'bcryptjs';
 import { takeFirst, throwIfUndef } from "../lib";
 import { User } from '../classes/user';
+import { Result } from './lib';
 
 const BCRYPT_SALT = throwIfUndef(process.env.BCRYPT_SALT, "BCRYPT_SALT");
 
@@ -83,21 +84,21 @@ export async function newUser(user: User, hashpwd: string): Promise<void> {
     users.push(user);
 }
 
-export async function updateUser(ci: number, user: User): Promise<"Success" | "Not found"> {
+export async function updateUser(ci: number, user: User): Promise<Result<void>> {
     const users = await getUsers();
 
     // Search for matching CI
     const matchCI = users.filter(u => u.ci == ci);
     if (matchCI.length == 0) {
-        return "Not found";
+        return { success: false, errorMsg: "Not found" };
     }
     const userToUpdate = matchCI[0];
 
 //    userToUpdate.update(user);
-    return "Success";
+    return { success: true, data: void 0 };
 }
 
-export async function deleteUser(ci: number): Promise<"Success" | "Not found"> {
+export async function deleteUser(ci: number): Promise<Result<void>> {
     const users = await getUsers();
 
     const [newUsers, found] = users.reduce<[User[], boolean]>(
@@ -105,5 +106,7 @@ export async function deleteUser(ci: number): Promise<"Success" | "Not found"> {
     );
 
     setUsers(newUsers);
-    return found ? "Success" : "Not found";
+    return found
+        ? { success: true, data: void 0 }
+        : { success: false, errorMsg: "Not found" };
 }
