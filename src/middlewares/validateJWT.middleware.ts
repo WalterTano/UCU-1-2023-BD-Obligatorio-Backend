@@ -1,6 +1,7 @@
 
 import jwt from 'jsonwebtoken';
 import { throwIfUndef } from "../lib";
+import { RequestHandler } from 'express';
 
 const SECRET_JWT_SEED = throwIfUndef(process.env.SECRET_JWT_SEED, "SECRET_JWT_SEED");
 
