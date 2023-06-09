@@ -9,7 +9,7 @@ type SqlResult = postgres.PendingQuery<postgres.Row[]>;
 
 /*
 Represents a reference to a tuple in a table, via the table name and its primary keys.
-Its to facilitate the construction of queries like
+It's to facilitate the construction of queries like
     `SELECT * from ${table} WHERE ${key1} = ${id1} AND ${key2} = ${id2} AND ...`
 */
 export class TupleRef {
@@ -28,7 +28,7 @@ export class TupleRef {
         }
 
         if (res == undefined) {
-            throw new Error("TableData must have at least one id");
+            throw new Error("TupleRef must have at least one id");
         }
 
         return res;
