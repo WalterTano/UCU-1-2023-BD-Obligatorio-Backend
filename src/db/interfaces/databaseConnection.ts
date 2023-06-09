@@ -1,0 +1,12 @@
+import { SelectQuery } from "./selectQuery";
+import { InsertQuery } from "./insertQuery";
+import { UpdateQuery } from "./updateQuery";
+import { DeleteQuery } from "./deleteQuery";
+import { Result } from "../types/result";
+
+export interface DatabaseConnection {
+    select(q: SelectQuery): Promise<Result<any[]>>,
+    insert(q: InsertQuery): Promise<Result<void>>,
+    update(q: UpdateQuery): Promise<Result<number>>,
+    delete(q: DeleteQuery): Promise<Result<number>>
+}
