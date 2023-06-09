@@ -1,5 +1,5 @@
 import sql from "../configs/db.config";
-import postgres from 'postgres';
+import postgres, { MaybeRow, PendingQuery, Row, Sql } from 'postgres';
 
 type Result<T> = { success: true, data: T } | { success: false, errorMsg: string };
 
@@ -7,101 +7,117 @@ export interface GenericData {
     [index: string]: any
 }
 
-type SqlResult = postgres.PendingQuery<postgres.Row[]>;
+export interface Condition {
+    column: string,
+    operation: "=" | "<" | ">" | "<=" | ">=" | "LIKE" | "IN"
+    value: any
+}
 
-/*
-Represents a reference to a tuple in a table, via the table name and its primary keys.
-It's to facilitate the construction of queries like
-    `SELECT * from ${table} WHERE ${key1} = ${id1} AND ${key2} = ${id2} AND ...`
-*/
-export class TupleRef {
-    public constructor(
-        public name: string,
-        public ids: [string, any][]
-    ) { }
+// SELECT <columns> FROM <table> WHERE <conditions> ORDER BY <orderCols> LIMIT <limit>;
+export interface SelectQuery {
+    columns?: string[],
+    table: string,
+    conditions?: Condition[],
+    orderCols?: string[],
+    limit?: number
+}
 
-    // Returns a representative to the filter of all ids in this table
-    public idsToFilter(): SqlResult {
-        let res: postgres.PendingQuery<postgres.Row[]> | undefined;
-        for (const [key, val] of this.ids) {
-            res = res
-                ? sql`${res} and ${sql(key)} = ${val} `
-                : sql`where ${sql(key)} = ${val} `;
+// INSERT INTO <table> <data>;
+export interface InsertQuery {
+    table: string,
+    values: GenericData
+}
+
+// UPDATE <table> SET <data> WHERE <conditions>;
+export interface UpdateQuery {
+    table: string,
+    values: GenericData,
+    conditions?: Condition[]
+}
+
+// DELETE FROM <table> WHERE <conditions>;
+export interface DeleteQuery {
+    table: string,
+    conditions: Condition[]
+}
+
+export interface DatabaseConnection {
+    select(q: SelectQuery): Promise<Result<any[]>>,
+    insert(q: InsertQuery): Promise<Result<void>>,
+    update(q: UpdateQuery): Promise<Result<number>>,
+    delete(q: DeleteQuery): Promise<Result<number>>
+}
+
+// This should go in another file, but I don't know where
+export class PostgresConnection implements DatabaseConnection {
+    public constructor(private readonly sql: Sql) { }
+
+    select(q: SelectQuery): Promise<Result<any[]>> {
+        const sqlCols = q.columns ? sql(q.columns) : sql`*`;
+        const sqlTable = sql(q.table);
+        const sqlConds = conditionsToSql(q.conditions);
+        const sqlOrder = orderColsToSql(q.orderCols);
+        const sqlLimit = limitToSql(q.limit);
+        
+        return resFromPromise(
+            sql`SELECT ${sqlCols} FROM ${sqlTable} ${sqlConds} ${sqlOrder} ${sqlLimit}`
+        );
+    }
+
+    insert(q: InsertQuery): Promise<Result<void>> {
+        throw new Error("Method not implemented.");
+    }
+    update(q: UpdateQuery): Promise<Result<number>> {
+        throw new Error("Method not implemented.");
+    }
+    delete(q: DeleteQuery): Promise<Result<number>> {
+        throw new Error("Method not implemented.");
+    }
+
+}
+
+async function resFromPromise<T>(promise: Promise<T>): Promise<Result<T>> {
+    try {
+        const res = await promise;
+        return { success: true, data: res };
+    } catch(e) {
+        const msg = e instanceof Error ? e.message : (e as any).toString();
+        return { success: false, errorMsg: msg };
+    }
+}
+
+function conditionToSql(c: Condition): PendingQuery<readonly MaybeRow[]> {
+    return sql`${sql(c.column)} ${sql(c.operation)} ${c.value}`;
+}
+
+function conditionsToSql(conditions?: Condition[]): PendingQuery<readonly MaybeRow[]> {
+    if (conditions == undefined) {
+        return sql``;
+    }
+
+    let res: PendingQuery<MaybeRow[]> | undefined;
+    for (const c of conditions) {
+        if (res != undefined) {
+            const sqlCondition = conditionToSql(c);
+            res = sql`${res} and ${sqlCondition}`;
         }
-
-        if (res == undefined) {
-            throw new Error("TupleRef must have at least one id");
-        }
-
-        return res;
     }
+
+    return res || sql``;
 }
 
-/*
-Example: await selectAll("alumnos");
-*/
-export function selectAll(table: string): Promise<postgres.Row[]> {
-    return sql`SELECT * FROM ${sql(table)}`;
-}
-
-/*
-Example: await selectById(
-    new TupleRef("alumnos", [["idalu", 5000]])
-);
-*/
-export async function selectById(table: TupleRef): Promise<postgres.Row> {
-    const filter = table.idsToFilter();
-    const midRes = await sql`SELECT * FROM ${sql(table.name)} ${filter}`;
-    return midRes[0];
-}
-
-/*
-Example: await insert("alumnos", {
-    idalu: 10001,
-    nomalu: "n11000",
-    apealu: "a11000",
-    docid: "d11000"
-});
-*/
-export async function insert(table: string, values: GenericData): Promise<Result<void>> {
-    try {
-        await sql`INSERT INTO ${sql(table)} ${sql(values)}`;
-        return { success: true, data: void 0 };
-    } catch(e) {
-        const msg = e instanceof Error ? e.message : (e as any).toString();
-        return { success: false, errorMsg: msg };
+function orderColsToSql(cols?: string[]): PendingQuery<readonly MaybeRow[]> {
+    if (cols == undefined || cols.length == 0) {
+        return sql``;
     }
+
+    return sql`ORDER BY ${sql(cols)}`;
 }
 
-/*
-Example: await update(
-    new TupleRef("alumnos", [["idalu", 10001]]),
-    { apealu: "aa11000" }
-)
-*/
-export async function update(table: TupleRef, values: GenericData): Promise<Result<number>> {
-    const filter = table.idsToFilter();
-    try {
-        const res = await sql`UPDATE ${sql(table.name)} SET ${sql(values)} ${filter} returning 1`;
-        return { success: true, data: res.length };
-    } catch(e) {
-        const msg = e instanceof Error ? e.message : (e as any).toString();
-        return { success: false, errorMsg: msg };
+function limitToSql(limit?: number): PendingQuery<readonly MaybeRow[]> {
+    if (limit == undefined) {
+        return sql``;
     }
-}
 
-/*
-Example: await remove(
-    new TupleRef("alumnos", [["idalu", 10001]])
-)
-*/
-export async function remove(table: TupleRef): Promise<Result<number>> {
-    const filter = table.idsToFilter();
-    try {
-        const res = await sql`DELETE FROM ${sql(table.name)} ${filter} returning 1`;
-        return { success: true, data: res.length };
-    } catch(e) {
-        const msg = e instanceof Error ? e.message : (e as any).toString();
-        return { success: false, errorMsg: msg };
-    }
+    return sql`LIMIT ${limit}`;
 }
