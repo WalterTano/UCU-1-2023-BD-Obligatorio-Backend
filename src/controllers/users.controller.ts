@@ -1,23 +1,24 @@
+import { RequestHandler } from "express";
 import { getUsers as getUsersModel } from "../models/user";
-import { Handler } from "./lib";
 
-export const getUsers: Handler<[]> = async (req, res) => {
+
+export const getUsers: RequestHandler = async (req, res) => {
     const users = await getUsersModel();
     res.send(users);
 };
 
-export const getUser: Handler<["userId"]> = async (req, res) => {
+export const getUser: RequestHandler<{userId: string}> = async (req, res) => {
     res.status(500).send("Not implemented yet");
 };
 
-export const postUser: Handler<[]> = async (req, res) => {
+export const postUser: RequestHandler = async (req, res) => {
     res.status(500).send("Not implemented yet");
 };
 
-export const putUser: Handler<["userId"]> = async (req, res) => {
+export const putUser: RequestHandler<{userId: string}> = async (req, res) => {
     res.status(500).send("Not implemented yet");
 };
 
-export const deleteUser: Handler<["userId"]> = async (req, res) => {
+export const deleteUser: RequestHandler<{userId: string}> = async (req, res) => {
     res.status(500).send("Not implemented yet");
 };
