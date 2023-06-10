@@ -1,6 +1,6 @@
 import postgres, { Sql } from "postgres";
 import { DatabaseConnection } from "../interfaces/databaseConnection";
-import { Result } from "../types/result";
+import { Result } from "../../types/result";
 import { conditionsToSql } from "../helpers/conditionsToSql";
 import { orderColsToSql } from "../helpers/orderColsToSql";
 import { limitToSql } from "../helpers/limitToSql";
@@ -40,6 +40,8 @@ export class PostgresConnection implements DatabaseConnection {
         );
     }
 
+    // TODO: Fix error
+    // Throws an error if q.values is an empty object
     update(q: UpdateQuery): Promise<Result<number>> {
         const sqlTable = this.sql(q.table);
         const sqlValues = this.sql(q.values);
