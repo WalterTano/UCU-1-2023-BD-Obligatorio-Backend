@@ -1,7 +1,6 @@
 import { UserTemplate } from "../interfaces/userTemplate";
 
 export function checkUserTemplate(v: any): v is UserTemplate {
-    console.log("DEBUG 0:", v);
     return typeof v.ci == "number" &&
         typeof v.nombre == "string" &&
         typeof v.apellido == "string" &&

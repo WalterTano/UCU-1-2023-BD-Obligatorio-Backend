@@ -14,7 +14,6 @@ export const getUser: RequestHandler<{userId: string}> = async (req, res) => {
 
 export const postUser: RequestHandler = async (req, res) => {
     const input = req.body;
-    console.log("DEBUG 1: ", input);
 
     if (!checkUserTemplate(input)) {
         res.status(400).send("Invalid data");
