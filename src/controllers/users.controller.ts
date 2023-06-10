@@ -1,14 +1,21 @@
 import { RequestHandler } from "express";
-import { getUsers as getUsersModel } from "../models/user";
+import { findByCI, getUsers as getUsersModel } from "../models/user";
 
 
-export const getUsers: RequestHandler = async (req, res) => {
+export const getUsers: RequestHandler = async (_req, res) => {
     const users = await getUsersModel();
-    res.send(users);
+    res.json(users);
 };
 
 export const getUser: RequestHandler<{userId: string}> = async (req, res) => {
-    res.status(500).send("Not implemented yet");
+    const userId = req.params.userId;
+    const user = await findByCI(userId);
+
+    if (user) {
+        res.json(user);
+    } else {
+        res.status(404).end();
+    }
 };
 
 export const postUser: RequestHandler = async (req, res) => {
