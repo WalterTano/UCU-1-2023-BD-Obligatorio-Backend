@@ -7,9 +7,9 @@ import { findByCredentials, findByUsername } from '../models/user';
 const BCRYPT_SALT = throwIfUndef(process.env.BCRYPT_SALT, "BCRYPT_SALT");
 
 export const doAuth: RequestHandler = async (req, res) => {
-    const { username, password } = req.body;
+    const { ci, password } = req.body;
 
-    if (!username || !password) {
+    if (!ci || !password) {
         return res.status(400).json({
             success: false,
             message: `Auth request must include username and password fields in the request's body.`
@@ -18,16 +18,16 @@ export const doAuth: RequestHandler = async (req, res) => {
 
     const hashpwd = await bcrypt.hash(password, BCRYPT_SALT);
     // Update this to use the new database.
-    const user = await findByCredentials(username, hashpwd);
+    const user = await findByCredentials(ci, hashpwd);
 
     if (!user) {
         return res.status(401).json({
             success: false,
-            message: `No user was found for username ${username} or password was incorrect.`
+            message: `No user was found for CI ${ci} or password was incorrect.`
         });
     }
     
-    const token = await generateJWT(username, user.username);
+    const token = await generateJWT(ci, user.ci.toString());
 
     return res.status(200).json({
         success: true,
@@ -39,19 +39,19 @@ export const doAuth: RequestHandler = async (req, res) => {
 };
 
 export const renewToken: RequestHandler = async (req, res) => {
-    const { username } = req.body;
+    const { ci } = req.body;
 
     // Update this to use the new database.
-    const user = await findByUsername(username);
+    const user = await findByUsername(ci);
     
     if (!user) {
         res.status(404).json({
             success: false,
-            message: `No user was found for username ${username}`
+            message: `No user was found for username ${ci}`
         });
     }
 
-    const token = await generateJWT( username, user.username );
+    const token = await generateJWT( ci, user.ci.toString() );
 
     return res.status(200).json({
         success: true,
