@@ -1,5 +1,6 @@
 import { RequestHandler } from "express";
-import { getUsers as getUsersModel } from "../models/user";
+import { getUsers as getUsersModel, newUser } from "../models/user";
+import { checkUserTemplate } from "../helpers/userTemplate";
 
 
 export const getUsers: RequestHandler = async (req, res) => {
@@ -12,7 +13,21 @@ export const getUser: RequestHandler<{userId: string}> = async (req, res) => {
 };
 
 export const postUser: RequestHandler = async (req, res) => {
-    res.status(500).send("Not implemented yet");
+    const input = req.body;
+    console.log("DEBUG 1: ", input);
+
+    if (!checkUserTemplate(input)) {
+        res.status(400).send("Invalid data");
+        return;
+    }
+
+    const result = await newUser(input);
+    if (result.success) {
+        res.status(200).end();
+    } else {
+        res.status(500).send(result.errorMsg);
+    }
+
 };
 
 export const putUser: RequestHandler<{userId: string}> = async (req, res) => {

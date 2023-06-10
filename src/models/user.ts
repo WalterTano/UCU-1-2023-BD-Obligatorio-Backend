@@ -1,5 +1,12 @@
 import { User } from '../interfaces/user';
 import dbConn from "../configs/db.config";
+import { UserTemplate } from '../interfaces/userTemplate';
+import { Result } from '../types/result';
+import bcrypt from 'bcryptjs';
+import { throwIfUndef } from '../lib';
+import { PutBucketEncryptionRequestFilterSensitiveLog } from '@aws-sdk/client-s3';
+
+const BCRYPT_SALT = throwIfUndef(process.env.BCRYPT_SALT, "BCRYPT_SALT");
 
 export async function getUsers(): Promise<User[]> {
     const sqlRes = await dbConn.select({
@@ -38,9 +45,19 @@ export async function findByUsername(username: string): Promise<User> {
     throw new Error("Not implemented yet");
 }
 
-// The password does not go with the User object in this layer
-export async function newUser(user: User, hashpwd: string): Promise<void> {
-    throw new Error("Not implemented yet");
+export async function newUser(user: UserTemplate): Promise<Result<void>> {
+    const password = user.password;
+
+    const temp: any = {...user};
+    delete temp.password;
+
+    const hashpwd = await bcrypt.hash(password, BCRYPT_SALT);
+    temp.hashpwd = hashpwd;
+
+    return await dbConn.insert({
+        table: "usuario",
+        values: temp
+    });
 }
 
 export async function updateUser(ci: number, user: User): Promise<"Success" | "Not found"> {

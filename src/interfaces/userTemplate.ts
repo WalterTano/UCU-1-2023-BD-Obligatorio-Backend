@@ -1,4 +1,4 @@
-export interface User {
+export interface UserTemplate {
     readonly ci: number,
     nombre: string,
     apellido: string,
@@ -9,5 +9,5 @@ export interface User {
     ciudad: string,
     departamento: string,
     direccion: string,
-    hashpwd: string,
+    password: string,
 }
