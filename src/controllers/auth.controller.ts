@@ -12,7 +12,11 @@ export const doAuth: RequestHandler = async (req, res) => {
     if (!ci || !password) {
         return res.status(400).json({
             success: false,
+<<<<<<< HEAD
             message: `Auth request must include CI and password fields in the request's body.`
+=======
+            message: `Auth request must include ci and password fields in the request's body.`
+>>>>>>> user-API
         });
     }
 
@@ -47,7 +51,11 @@ export const renewToken: RequestHandler = async (req, res) => {
     if (!user) {
         res.status(404).json({
             success: false,
+<<<<<<< HEAD
             message: `No user was found for CI ${ci}`
+=======
+            message: `No user was found for user ${ci}`
+>>>>>>> user-API
         });
         return;
     }

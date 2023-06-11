@@ -1,5 +1,6 @@
 import { User } from '../interfaces/user';
 import dbConn from "../configs/db.config";
+import { Result } from '../types/result';
 
 export async function getUsers(): Promise<User[]> {
     const sqlRes = await dbConn.select({
@@ -26,6 +27,7 @@ export async function getUsers(): Promise<User[]> {
     return sqlRes.data;
 }
 
+<<<<<<< HEAD
 export async function getPassword(ci: string): Promise<string> {
     throw new Error("Not implemented yet");
 }
@@ -60,6 +62,18 @@ export async function findByCI(ci: string): Promise<User | undefined> {
     }
 
     return sqlRes.data[0];
+=======
+export async function getPassword(ci: number): Promise<string> {
+    throw new Error("Not implemented yet");
+}
+
+export async function findByCredentials(ci: number, hashpwd: string): Promise<User> {
+    throw new Error("Not implemented yet");
+}
+
+export async function findByCI(ci: number): Promise<User> {
+    throw new Error("Not implemented yet");
+>>>>>>> user-API
 }
 
 // The password does not go with the User object in this layer
@@ -71,6 +85,13 @@ export async function updateUser(ci: number, user: User): Promise<"Success" | "N
     throw new Error("Not implemented yet");
 }
 
-export async function deleteUser(ci: number): Promise<"Success" | "Not found"> {
-    throw new Error("Not implemented yet");
+export async function deleteUser(ci: number): Promise<Result<boolean>> {
+    const res = await dbConn.delete({
+        table: "usuario",
+        conditions: [
+            { column: "ci", operation: "=", value: ci }
+        ]
+    });
+
+    return res.success ? { success: true, data: res.data > 0 } : res;
 }
