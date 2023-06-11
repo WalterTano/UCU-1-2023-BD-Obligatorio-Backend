@@ -1,4 +1,4 @@
-import { Result } from "../../types/result";
+import { Result } from "../types/result";
 
 export async function resFromPromise<T>(promise: Promise<T>): Promise<Result<T>> {
     try {

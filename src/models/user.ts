@@ -1,6 +1,5 @@
 import { User } from '../interfaces/user';
 import dbConn from "../configs/db.config";
-import { Result } from '../types/result';
 
 export async function getUsers(): Promise<User[]> {
     const sqlRes = await dbConn.select({
@@ -48,13 +47,6 @@ export async function updateUser(ci: number, user: User): Promise<"Success" | "N
     throw new Error("Not implemented yet");
 }
 
-export async function deleteUser(ci: number): Promise<Result<boolean>> {
-    const res = await dbConn.delete({
-        table: "usuario",
-        conditions: [
-            { column: "ci", operation: "=", value: ci }
-        ]
-    });
-
-    return res.success ? { success: true, data: res.data > 0 } : res;
+export async function deleteUser(ci: number): Promise<"Success" | "Not found"> {
+    throw new Error("Not implemented yet");
 }

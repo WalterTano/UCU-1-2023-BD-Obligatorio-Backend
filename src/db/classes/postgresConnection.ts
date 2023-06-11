@@ -1,6 +1,6 @@
 import postgres, { Sql } from "postgres";
 import { DatabaseConnection } from "../interfaces/databaseConnection";
-import { Result } from "../../types/result";
+import { Result } from "../types/result";
 import { conditionsToSql } from "../helpers/conditionsToSql";
 import { orderColsToSql } from "../helpers/orderColsToSql";
 import { limitToSql } from "../helpers/limitToSql";
