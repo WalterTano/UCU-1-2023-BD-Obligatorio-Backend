@@ -60,8 +60,20 @@ export async function newUser(user: UserTemplate): Promise<Result<void>> {
     });
 }
 
-export async function updateUser(ci: number, user: User): Promise<"Success" | "Not found"> {
-    throw new Error("Not implemented yet");
+// It's not the same that an object has no attribute,
+// or that it has that attribute with the value 'undefined'
+export async function updateUser(ci: number, user: Omit<Partial<User>, "ci">): Promise<Result<number | undefined>> {
+    if (Object.keys(user).length <= 0) {
+        return { success: true, data: undefined };
+    }
+
+    return await dbConn.update({
+        table: "usuario",
+        values: user,
+        conditions: [
+            {column: "ci", operation: "=", value: ci}
+        ]
+    });
 }
 
 export async function deleteUser(ci: number): Promise<Result<boolean>> {
