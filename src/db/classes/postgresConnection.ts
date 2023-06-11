@@ -40,6 +40,8 @@ export class PostgresConnection implements DatabaseConnection {
         );
     }
 
+    // TODO: Fix error
+    // Throws an error if q.values is an empty object
     update(q: UpdateQuery): Promise<Result<number>> {
         const sqlTable = this.sql(q.table);
         const sqlValues = this.sql(q.values);
