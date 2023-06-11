@@ -1,20 +1,7 @@
 import { RequestHandler } from "express";
 import { getUsers as getUsersModel, deleteUser as deleteUserModel } from "../models/user";
 import { Result } from "../types/result";
-
-function handleErrors<T>(handler: RequestHandler<T>): RequestHandler<T> {
-    return async (req, res, next) => {
-        try {
-            await handler(req, res, next);
-        } catch (e) {
-            console.error(e);
-            if (!res.writableEnded) {
-                const msg: Result<never> = { success: false, errorMsg: "Internal server error" };
-                res.status(500).json(msg);
-            }
-        }
-    }
-}
+import { handleErrors } from "../helpers/controllers.helpers";
 
 export const getUsers: RequestHandler = async (req, res) => {
     const users = await getUsersModel();
@@ -37,7 +24,8 @@ export const deleteUser: RequestHandler<{ userId: string }> = handleErrors(
     async (req, res) => {
         const userId = parseInt(req.params.userId);
         if (isNaN(userId)) {
-            return res.status(400).send("Invalid CI");
+            const response: Result<never> = {success: false, errorMsg: "Invalid CI"};
+            return res.status(400).json(response);
         }
 
         const result = await deleteUserModel(userId);
