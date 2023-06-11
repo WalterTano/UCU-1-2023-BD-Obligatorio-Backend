@@ -18,7 +18,7 @@ export const postUser: RequestHandler = handleErrors(
         const input = req.body;
 
         if (!checkUserTemplate(input)) {
-            res.status(400).send("Invalid data");
+            res.status(400).json({success: false, errorMsg: "Invalid data"});
             return;
         }
 
