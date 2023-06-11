@@ -21,7 +21,11 @@ export const postUser: RequestHandler = async (req, res) => {
     }
 
     const result = await newUser(input);
-    res.status(200).json(result);
+    if (result.success) {
+        res.status(200).json(result);
+    } else {
+        res.status(400).json(result);
+    }
 };
 
 export const putUser: RequestHandler<{userId: string}> = async (req, res) => {
