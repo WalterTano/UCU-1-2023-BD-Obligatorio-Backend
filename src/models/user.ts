@@ -33,7 +33,6 @@ export async function getUsers(): Promise<User[]> {
     return sqlRes.data;
 }
 
-<<<<<<< HEAD
 export async function getPassword(ci: string): Promise<string> {
     throw new Error("Not implemented yet");
 }
@@ -68,18 +67,6 @@ export async function findByCI(ci: string): Promise<User | undefined> {
     }
 
     return sqlRes.data[0];
-=======
-export async function getPassword(ci: number): Promise<string> {
-    throw new Error("Not implemented yet");
-}
-
-export async function findByCredentials(ci: number, hashpwd: string): Promise<User> {
-    throw new Error("Not implemented yet");
-}
-
-export async function findByCI(ci: number): Promise<User> {
-    throw new Error("Not implemented yet");
->>>>>>> user-API
 }
 
 export async function newUser(user: UserTemplate): Promise<Result<void>> {
