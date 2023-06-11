@@ -22,15 +22,7 @@ export const putUser: RequestHandler<{userId: string}> = async (req, res) => {
     }
 
     const result = await updateUser(userCI, req.body);
-    if (!result.success) {
-        res.status(500).send(result.errorMsg);
-    } else if (result.data == undefined) {
-        res.status(200).end("No changes made");
-    } else if (result.data <= 0) {
-        res.status(500).send(`The CI ${userCI} doesn't match any known user`);
-    } else {
-        res.status(200).end("Done");
-    }
+    res.status(200).json(result);
 };
 
 export const deleteUser: RequestHandler<{userId: string}> = async (req, res) => {
