@@ -21,12 +21,7 @@ export const postUser: RequestHandler = async (req, res) => {
     }
 
     const result = await newUser(input);
-    if (result.success) {
-        res.status(200).end();
-    } else {
-        res.status(500).send(result.errorMsg);
-    }
-
+    res.status(200).json(result);
 };
 
 export const putUser: RequestHandler<{userId: string}> = async (req, res) => {
