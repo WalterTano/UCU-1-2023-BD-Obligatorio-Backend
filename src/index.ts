@@ -6,7 +6,6 @@ import helmet from 'helmet';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import morgan from 'morgan';
-import { usersRouter } from './routes/users.routes';
 
 const BASE_ROUTE = "/api/v1";
 const PORT = throwIfUndef(process.env.PORT, "PORT");
@@ -25,7 +24,6 @@ app.use(cors());
 app.use(morgan('combined'));
 
 app.use(BASE_ROUTE, authRouter);
-app.use(BASE_ROUTE, usersRouter);
 
 app.get("/", (req, res) => {
     res.send("Hello world");
