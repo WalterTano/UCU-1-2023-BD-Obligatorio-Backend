@@ -26,11 +26,5 @@ export const deleteUser: RequestHandler<{userId: string}> = async (req, res) => 
     }
 
     const result = await deleteUserModel(userId);
-    if (!result.success) {
-        res.status(500).send(result.errorMsg);
-    } else if (result.data) {
-        res.status(200).send("Done");
-    } else {
-        res.status(200).send("No changes made");
-    }
+    res.status(200).json(result);
 };
