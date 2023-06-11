@@ -1,17 +1,26 @@
 import { RequestHandler } from "express";
-import { getUsers as getUsersModel, updateUser, deleteUser as deleteUserModel, newUser } from "../models/user";
+import { findByCI, getUsers as getUsersModel, updateUser, deleteUser as deleteUserModel, newUser } from "../models/user";
 import { checkUserTemplate } from "../helpers/userTemplate";
 import { Result } from "../types/result";
 import { handleErrors } from "../helpers/controllers.helpers";
 
-export const getUsers: RequestHandler = async (req, res) => {
+export const getUsers: RequestHandler = async (_req, res) => {
     const users = await getUsersModel();
-    res.send(users);
+    res.json(users);
 };
 
-export const getUser: RequestHandler<{ userId: string }> = async (req, res) => {
-    res.status(500).send("Not implemented yet");
-};
+export const getUser: RequestHandler<{ userId: string }> = handleErrors(
+    async (req, res) => {
+        const userId = req.params.userId;
+        const user = await findByCI(userId);
+
+        if (user) {
+            res.json(user);
+        } else {
+            res.status(404).end();
+        }
+    }
+);
 
 export const postUser: RequestHandler = handleErrors(
     async (req, res) => {

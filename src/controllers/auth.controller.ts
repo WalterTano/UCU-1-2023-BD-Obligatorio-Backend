@@ -12,7 +12,7 @@ export const doAuth: RequestHandler = async (req, res) => {
     if (!ci || !password) {
         return res.status(400).json({
             success: false,
-            message: `Auth request must include ci and password fields in the request's body.`
+            message: `Auth request must include CI and password fields in the request's body.`
         });
     }
 
@@ -47,8 +47,9 @@ export const renewToken: RequestHandler = async (req, res) => {
     if (!user) {
         res.status(404).json({
             success: false,
-            message: `No user was found for user ${ci}`
+            message: `No user was found for CI ${ci}`
         });
+        return;
     }
 
     const token = await generateJWT( ci, user.ci.toString() );
