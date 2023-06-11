@@ -1,5 +1,6 @@
 import { RequestHandler } from "express";
 import { getUsers as getUsersModel, updateUser } from "../models/user";
+import { Result } from "../types/result";
 
 
 export const getUsers: RequestHandler = async (req, res) => {
@@ -18,7 +19,8 @@ export const postUser: RequestHandler = async (req, res) => {
 export const putUser: RequestHandler<{userId: string}> = async (req, res) => {
     const userCI = parseInt(req.params.userId);
     if (isNaN(userCI)) {
-        return res.status(400).send("Invalid CI");
+        const response: Result<never> = {success: false, errorMsg: "Invalid CI" };
+        return res.status(400).send(response);
     }
 
     const result = await updateUser(userCI, req.body);
