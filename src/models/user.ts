@@ -33,15 +33,15 @@ export async function getUsers(): Promise<User[]> {
     return sqlRes.data;
 }
 
-export async function getPassword(username: string): Promise<string> {
+export async function getPassword(ci: number): Promise<string> {
     throw new Error("Not implemented yet");
 }
 
-export async function findByCredentials(username: string, hashpwd: string): Promise<User> {
+export async function findByCredentials(ci: number, hashpwd: string): Promise<User> {
     throw new Error("Not implemented yet");
 }
 
-export async function findByUsername(username: string): Promise<User> {
+export async function findByCI(ci: number): Promise<User> {
     throw new Error("Not implemented yet");
 }
 
@@ -64,6 +64,13 @@ export async function updateUser(ci: number, user: User): Promise<"Success" | "N
     throw new Error("Not implemented yet");
 }
 
-export async function deleteUser(ci: number): Promise<"Success" | "Not found"> {
-    throw new Error("Not implemented yet");
+export async function deleteUser(ci: number): Promise<Result<boolean>> {
+    const res = await dbConn.delete({
+        table: "usuario",
+        conditions: [
+            { column: "ci", operation: "=", value: ci }
+        ]
+    });
+
+    return res.success ? { success: true, data: res.data > 0 } : res;
 }
