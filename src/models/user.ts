@@ -1,109 +1,52 @@
-import bcrypt from 'bcryptjs';
-import { takeFirst, throwIfUndef } from "../lib";
-import { User } from '../classes/user';
-
-const BCRYPT_SALT = throwIfUndef(process.env.BCRYPT_SALT, "BCRYPT_SALT");
-
-let users: User[] | undefined;
-let passwords: { [index: string]: string | undefined };
+import { User } from '../interfaces/user';
+import dbConn from "../configs/db.config";
 
 export async function getUsers(): Promise<User[]> {
-    if (!users) {
-        users = [];
+    const sqlRes = await dbConn.select({
+        table: "usuario",
+        columns: [
+            "ci",
+            "nombre",
+            "apellido",
+            "email",
+            "geo_dist",
+            "geo_estado",
+            "is_admin",
+            "ciudad",
+            "departamento",
+            "direccion"
+        ]
+    });
+
+    if (!sqlRes.success) {
+        // TODO, mejorar manejo de errores
+        throw new Error(sqlRes.errorMsg);
     }
 
-    return users;
-}
-
-function setUsers(newUsers: User[]): void {
-    users = newUsers;
+    return sqlRes.data;
 }
 
 export async function getPassword(username: string): Promise<string> {
-    if (!passwords) {
-        passwords = {};
-    }
-
-    const res = passwords[username];
-    if (res == undefined) {
-        throw new Error(`The user ${JSON.stringify(username)} does not exist`);
-    }
-    return res;
+    throw new Error("Not implemented yet");
 }
 
 export async function findByCredentials(username: string, hashpwd: string): Promise<User> {
-    const users = await getUsers();
-
-    // Check whether the passwords match
-    const actualPwd = await getPassword(username)
-        .catch(() => { throw new Error("There's no user with given credentials") });
-    
-    if (actualPwd != hashpwd) {
-        throw new Error("There's no user with given credentials");
-    }
-
-    // The list of users which match the username
-    const v1 = users.filter(u => u.username == username);
-
-    // Attempt to take the first element
-    const v2: readonly [User, readonly User[]] | undefined = takeFirst(v1);
-    if (v2 == undefined) {
-        throw new Error("There's no user with given credentials");
-    }
-    const user = v2[0];
-
-    return user;
+    throw new Error("Not implemented yet");
 }
 
 export async function findByUsername(username: string): Promise<User> {
-    const users = await getUsers();
-
-    // The list of users which match the username
-    const v1 = users.filter(u => u.username == username);
-
-    // Attempt to take the first element
-    const v2: readonly [User, readonly User[]] | undefined = takeFirst(v1);
-    if (v2 == undefined) {
-        throw new Error("There's no user with the username " + JSON.stringify(username));
-    }
-    const user = v2[0];
-
-    return user;
+    throw new Error("Not implemented yet");
 }
 
 // The password does not go with the User object in this layer
 export async function newUser(user: User, hashpwd: string): Promise<void> {
-    const users = await getUsers();
-
-    // CI must be unique
-    if (users.filter(u => u.ci == user.ci).length > 0) {
-        throw new Error("There's already another user with the same CI");
-    }
-
-    users.push(user);
+    throw new Error("Not implemented yet");
 }
 
 export async function updateUser(ci: number, user: User): Promise<"Success" | "Not found"> {
-    const users = await getUsers();
-
-    // Search for matching CI
-    const matchCI = users.filter(u => u.ci == ci);
-    if (matchCI.length == 0) {
-        return "Not found";
-    }
-    const userToUpdate = matchCI[0];
-
-//    userToUpdate.update(user);
-    return "Success";
+    throw new Error("Not implemented yet");
 }
 
 export async function deleteUser(ci: number): Promise<"Success" | "Not found"> {
-    const users = await getUsers();
-
-    const [newUsers, found] = users.reduce<[User[], boolean]>(
-        ([acc, found], u) => u.ci == ci ? [acc, true] : [[...acc, u], found], [[], false]
-    );
-
-    setUsers(newUsers);
-    return found ? "Success" : "Not found";
+    throw new Error("Not implemented yet");
 }
