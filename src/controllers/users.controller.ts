@@ -22,7 +22,11 @@ export const putUser: RequestHandler<{userId: string}> = async (req, res) => {
     }
 
     const result = await updateUser(userCI, req.body);
-    res.status(200).json(result);
+    if (result.success) {
+        res.status(200).json(result);
+    } else {
+        res.status(400).json(result);
+    }
 };
 
 export const deleteUser: RequestHandler<{userId: string}> = async (req, res) => {
