@@ -1,5 +1,5 @@
 import { RequestHandler } from "express";
-import { getUsers as getUsersModel, deleteUser as deleteUserModel } from "../models/user";
+import { getUsers as getUsersModel, updateUser, deleteUser as deleteUserModel } from "../models/user";
 import { Result } from "../types/result";
 import { handleErrors } from "../helpers/controllers.helpers";
 
@@ -16,15 +16,28 @@ export const postUser: RequestHandler = async (req, res) => {
     res.status(500).send("Not implemented yet");
 };
 
-export const putUser: RequestHandler<{ userId: string }> = async (req, res) => {
-    res.status(500).send("Not implemented yet");
-};
+export const putUser: RequestHandler<{ userId: string }> = handleErrors(
+    async (req, res) => {
+        const userCI = parseInt(req.params.userId);
+        if (isNaN(userCI)) {
+            const response: Result<never> = { success: false, errorMsg: "Invalid CI" };
+            return res.status(400).json(response);
+        }
+
+        const result = await updateUser(userCI, req.body);
+        if (result.success) {
+            res.status(200).json(result);
+        } else {
+            res.status(400).json(result);
+        }
+    }
+);
 
 export const deleteUser: RequestHandler<{ userId: string }> = handleErrors(
     async (req, res) => {
         const userId = parseInt(req.params.userId);
         if (isNaN(userId)) {
-            const response: Result<never> = {success: false, errorMsg: "Invalid CI"};
+            const response: Result<never> = { success: false, errorMsg: "Invalid CI" };
             return res.status(400).json(response);
         }
 
