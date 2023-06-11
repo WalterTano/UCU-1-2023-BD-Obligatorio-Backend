@@ -26,5 +26,9 @@ export const deleteUser: RequestHandler<{userId: string}> = async (req, res) => 
     }
 
     const result = await deleteUserModel(userId);
-    res.status(200).json(result);
+    if (result.success) {
+        res.status(200).json(result);
+    } else {
+        res.status(400).json(result);
+    }
 };
