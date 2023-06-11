@@ -27,15 +27,15 @@ export async function getUsers(): Promise<User[]> {
     return sqlRes.data;
 }
 
-export async function getPassword(username: string): Promise<string> {
+export async function getPassword(ci: number): Promise<string> {
     throw new Error("Not implemented yet");
 }
 
-export async function findByCredentials(username: string, hashpwd: string): Promise<User> {
+export async function findByCredentials(ci: number, hashpwd: string): Promise<User> {
     throw new Error("Not implemented yet");
 }
 
-export async function findByUsername(username: string): Promise<User> {
+export async function findByCI(ci: number): Promise<User> {
     throw new Error("Not implemented yet");
 }
 
