@@ -1,8 +1,7 @@
 import { RequestHandler } from "express";
 import { findByCI, getUsers as getUsersModel, updateUser, deleteUser as deleteUserModel, newUser } from "../models/user";
 import { checkUserTemplate } from "../helpers/userTemplate";
-import { Result } from "../types/result";
-import { handleErrors, toRequestHandler } from "../helpers/controllers.helpers";
+import { toRequestHandler } from "../helpers/controllers.helpers";
 
 export const getUsers: RequestHandler = toRequestHandler(async () => {
     const users = await getUsersModel();
