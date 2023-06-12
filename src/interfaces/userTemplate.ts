@@ -1,7 +1,7 @@
 import { encrypt } from "../helpers/crypt";
 import { GeoConfig } from "./geoConfig";
-import { LocalGeolocation } from "./localGeoLocation";
-import { geoConfigFromDb, geoConfigToDb, localGeolocationFromDb, localGeolocationToDb } from "./user";
+import { LocalGeolocation } from "./localGeolocation";
+import { geoConfigToDb, localGeolocationToDb } from "./user";
 
 export interface DbUserTemplate {
     readonly ci: number,
@@ -21,9 +21,9 @@ export interface UserTemplate {
     id: number,
     name: string,
     email: string,
-    isAdmin?: boolean,
+    isAdmin: boolean | null,
     address: LocalGeolocation,
-    geoConfig: GeoConfig,
+    geoConfig: GeoConfig | null,
     password: string
 }
 
@@ -32,8 +32,8 @@ export async function userTemplateToDb(info: UserTemplate): Promise<DbUserTempla
         ci: info.id,
         nombre: info.name,
         email: info.email,
-        is_admin: info.isAdmin,
-        ...geoConfigToDb(info.geoConfig),
+        is_admin: info.isAdmin || false,
+        ...(info.geoConfig ? geoConfigToDb(info.geoConfig) : {}),
         ...localGeolocationToDb(info.address),
         hashpwd: await encrypt(info.password)
     };

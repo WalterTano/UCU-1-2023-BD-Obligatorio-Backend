@@ -1,6 +1,5 @@
 import { RequestHandler } from "express";
 import { findByCI, getUsers as getUsersModel, updateUser, deleteUser as deleteUserModel, newUser } from "../models/user";
-import { checkUserTemplate } from "../helpers/userTemplate";
 import { toRequestHandler } from "../helpers/controllers.helpers";
 
 export const getUsers: RequestHandler = toRequestHandler(async () => {
@@ -24,10 +23,6 @@ export const getUser: RequestHandler<{ userId: string }> = toRequestHandler(
 export const postUser: RequestHandler = toRequestHandler(
     async (req) => {
         const input = req.body;
-
-        if (!checkUserTemplate(input)) {
-            return { success: false, errorMessage: "Invalid data" };
-        }
 
         const result = await newUser(input);
         return result;

@@ -31,6 +31,7 @@ export class PostgresConnection implements DatabaseConnection {
     }
 
     insert(q: InsertQuery): Promise<Result<any>> {
+        console.log("1:", q);
         const sqlTable = this.sql(q.table);
         const sqlValues = this.sql(q.values);
         const sqlIdColumns = this.sql(q.idColumns);

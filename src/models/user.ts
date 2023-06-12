@@ -4,7 +4,7 @@ import { UserTemplate, userTemplateToDb } from '../interfaces/userTemplate';
 import { Result } from '../types/result';
 import bcrypt from 'bcryptjs';
 import { throwIfUndef } from '../lib';
-import { unwrapResult } from '../helpers/resultHelpers';
+import { mapResult, unwrapResult } from '../helpers/resultHelpers';
 
 export async function getUsers(): Promise<User[]> {
     const sqlRes = await dbConn.select({
@@ -61,7 +61,7 @@ export async function findByCI(ci: string): Promise<User | undefined> {
 }
 
 export async function newUser(user: UserTemplate): Promise<Result<number>> {
-    const dbUser = userTemplateToDb(user);
+    const dbUser = await userTemplateToDb(user);
 
     const result = await dbConn.insert({
         table: "usuario",
@@ -69,7 +69,7 @@ export async function newUser(user: UserTemplate): Promise<Result<number>> {
         values: dbUser
     });
 
-    return result;
+    return mapResult(result, data => data.at(0));
 }
 
 // It's not the same that an object has no attribute,

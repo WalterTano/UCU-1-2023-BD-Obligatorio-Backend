@@ -1,5 +1,5 @@
 import { GeoConfig } from "./geoConfig";
-import { LocalGeolocation } from "./localGeoLocation";
+import { LocalGeolocation } from "./localGeolocation";
 
 export interface DbUser {
     readonly ci: number,
@@ -12,8 +12,8 @@ export interface DbUser {
     departamento: string,
     ciudad: string,
     direccion: string,
-    latitud?: number | null,
-    longitud?: number | null
+    latitud: number | null,
+    longitud: number | null
 }
 
 export interface User {
@@ -60,8 +60,8 @@ export function localGeolocationToDb(info: LocalGeolocation): Pick<DbUser, "pais
         departamento: info.province,
         ciudad: info.city,
         direccion: info.streetAddress,
-        latitud: info.latitude,
-        longitud: info.longitude
+        latitud: info.latitude || null,
+        longitud: info.longitude || null
     };
 }
 
