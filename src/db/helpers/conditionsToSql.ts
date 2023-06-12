@@ -2,23 +2,22 @@ import { PendingQuery, Sql } from "postgres";
 import { Condition } from "../interfaces/condition";
 
 const operationsMap: {
-    [index in Condition["operation"]]: (sql: Sql) => PendingQuery<any>
+    [index in Condition["operation"]]: (sql: Sql, value: any) => PendingQuery<any>
 } = {
-    "<": sql => sql`<`,
-    ">": sql => sql`>`,
-    "=": sql => sql`=`,
-    "<=": sql => sql`<=`,
-    ">=": sql => sql`>=`,
-    "IN": sql => sql`IN`,
-    "LIKE": sql => sql`LIKE`
+    "<": (sql, v) => sql`< ${v}`,
+    ">": (sql, v) => sql`> ${v}`,
+    "=": (sql, v) => sql`= ${v}`,
+    "<=": (sql, v) => sql`<= ${v}`,
+    ">=": (sql, v) => sql`>= ${v}`,
+    "IN": (sql, v) => sql`IN ${sql(v)}`,
+    "LIKE": (sql, v) => sql`LIKE ${v}`
 };
 
 function conditionToSql(sql: Sql, c: Condition): PendingQuery<any> {
     const sqlColumn = sql(c.column);
-    const sqlOperation = operationsMap[c.operation](sql);
-    const value = c.value;
+    const sqlRemainder = operationsMap[c.operation](sql, c.value);
 
-    return sql`${sqlColumn} ${sqlOperation} ${value}`;
+    return sql`${sqlColumn} ${sqlRemainder}`;
 }
 
 export function conditionsToSql(sql: Sql, conditions?: Condition[]): PendingQuery<any> {

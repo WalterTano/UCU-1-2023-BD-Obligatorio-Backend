@@ -16,7 +16,7 @@ export const getUser: RequestHandler<{ userId: string }> = toRequestHandler(
         if (user) {
             return { success: true, data: user };
         } else {
-            return { success: false, errorMsg: "User not found" }
+            return { success: false, errorMessage: "User not found" }
         }
     }
 );

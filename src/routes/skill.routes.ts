@@ -15,4 +15,4 @@ router.put(`${BASE_ROUTE}/:skillId`, putSkill);
 
 router.delete(`${BASE_ROUTE}/:skillId`, deleteSkill);
 
-export const skillRouter: RequestHandler<{userId: string}> = router;
+export const skillsRouter: RequestHandler<{userId: string}> = router;
