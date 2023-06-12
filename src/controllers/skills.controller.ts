@@ -1,6 +1,6 @@
 import { RequestHandler } from "express";
 import { toRequestHandler } from "../helpers/controllers.helpers";
-import { getSkillsById, getSkillById, getSkillOfUser, getSkillsOfUser, newSkillOfUser, getAllSkills, deleteSkillOfUser } from "../models/skill";
+import { getSkillsById, getSkillById, getSkillOfUser, getSkillsOfUser, newSkillOfUser, getAllSkills, updateSkillOfUser, deleteSkillOfUser } from "../models/skill";
 import { isNotUndefined } from "../helpers/isNotUndefined";
 
 export const getSkills: RequestHandler = toRequestHandler(
@@ -75,13 +75,31 @@ export const postSkill: RequestHandler<{ userId: string }> = toRequestHandler(
         }
 
         const res = await newSkillOfUser(userId, { descripcion, habilidad });
-        return { success: true, data: res };
+        return res;
     }
 );
 
-export const putSkill: RequestHandler<{ userId: string, skillId: string }> = async (req, res) => {
-    res.status(500).send("Not implemented yet");
-};
+export const putSkill: RequestHandler<{ userId: string, skillId: string }> = toRequestHandler(
+    async (req) => {
+        const userId = parseInt(req.params.userId);
+        if (isNaN(userId)) {
+            return { success: false, errorMessage: "Invalid CI" };
+        }
+
+        const skillId = parseInt(req.params.skillId);
+        if (isNaN(skillId)) {
+            return { success: false, errorMessage: "Invalid skill id" };
+        }
+
+        const descripcion: unknown = req.body.descripcion;
+        if ((typeof descripcion !== "string") && (descripcion != undefined)) {
+            return { success: false, errorMessage: `Invalid description` };
+        }
+
+        const res = await updateSkillOfUser({ci: userId, id_hab: skillId}, descripcion || null);
+        return res;
+    }
+);
 
 export const deleteSkill: RequestHandler<{ userId: string, skillId: string }> = toRequestHandler(
     async (req) => {

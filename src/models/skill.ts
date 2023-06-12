@@ -96,11 +96,12 @@ async function getIdOfSkill(name: string): Promise<number | undefined> {
 }
 
 type SkillOfUserId = {id_hab: number, ci: number};
-export async function newSkillOfUser(ci: number, info: SkillOfUserTemplate): Promise<SkillOfUserId> {
+// TODO: Change return type to Promise<Result<SkillOfUserId>>
+export async function newSkillOfUser(ci: number, info: SkillOfUserTemplate): Promise<Result<SkillOfUserId>> {
     const hab = info.habilidad;
     const habId = typeof hab === "number" ? hab : await getIdOfSkill(hab);
     if (habId == undefined) {
-        throw new Error("Unknown skill");
+        return { success: false, errorMessage: "Unknown skill" };
     }
 
     const sqlRes = await dbConn.insert({
@@ -113,7 +114,7 @@ export async function newSkillOfUser(ci: number, info: SkillOfUserTemplate): Pro
         }
     });
 
-    return unwrapResult(sqlRes)[0];
+    return { success: true, data: unwrapResult(sqlRes)[0] };
 }
 
 export async function deleteSkillOfUser(id: SkillOfUserId): Promise<Result<void>> {
@@ -124,6 +125,19 @@ export async function deleteSkillOfUser(id: SkillOfUserId): Promise<Result<void>
             { column: "id_hab", operation: "=", value: id.id_hab }
         ]
     });
+    return mapResult(sqlRes, _ => void 0);
+}
 
+export async function updateSkillOfUser(id: SkillOfUserId, newDescripcion: string | null): Promise<Result<void>> {
+    const sqlRes = await dbConn.update({
+        table: "usuario_tiene_habilidad",
+        values: {
+            descripcion: newDescripcion
+        },
+        conditions: [
+            { column: "ci", operation: "=", value: id.ci },
+            { column: "id_hab", operation: "=", value: id.id_hab }
+        ]
+    });
     return mapResult(sqlRes, _ => void 0);
 }
