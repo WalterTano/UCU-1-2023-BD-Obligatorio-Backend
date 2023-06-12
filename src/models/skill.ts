@@ -1,8 +1,9 @@
 import dbConn from "../configs/db.config";
-import { unwrapResult } from "../helpers/unwrapResult";
+import { mapResult, unwrapResult } from "../helpers/resultHelpers";
 import { Skill } from "../interfaces/skill";
 import { SkillOfUser } from "../interfaces/skillOfUser";
 import { SkillOfUserTemplate } from "../interfaces/skillOfUserTemplate";
+import { Result } from "../types/result";
 
 export async function getAllSkills(): Promise<Skill[]> {
     const sqlRes = await dbConn.select({
@@ -115,3 +116,14 @@ export async function newSkillOfUser(ci: number, info: SkillOfUserTemplate): Pro
     return unwrapResult(sqlRes)[0];
 }
 
+export async function deleteSkillOfUser(id: SkillOfUserId): Promise<Result<void>> {
+    const sqlRes = await dbConn.delete({
+        table: "usuario_tiene_habilidad",
+        conditions: [
+            { column: "ci", operation: "=", value: id.ci },
+            { column: "id_hab", operation: "=", value: id.id_hab }
+        ]
+    });
+
+    return mapResult(sqlRes, _ => void 0);
+}

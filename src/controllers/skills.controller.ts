@@ -1,6 +1,6 @@
 import { RequestHandler } from "express";
 import { toRequestHandler } from "../helpers/controllers.helpers";
-import { getSkillsById, getSkillById, getSkillOfUser, getSkillsOfUser, newSkillOfUser, getAllSkills } from "../models/skill";
+import { getSkillsById, getSkillById, getSkillOfUser, getSkillsOfUser, newSkillOfUser, getAllSkills, deleteSkillOfUser } from "../models/skill";
 import { isNotUndefined } from "../helpers/isNotUndefined";
 
 export const getSkills: RequestHandler = toRequestHandler(
@@ -83,6 +83,19 @@ export const putSkill: RequestHandler<{ userId: string, skillId: string }> = asy
     res.status(500).send("Not implemented yet");
 };
 
-export const deleteSkill: RequestHandler<{ userId: string, skillId: string }> = async (req, res) => {
-    res.status(500).send("Not implemented yet");
-};
+export const deleteSkill: RequestHandler<{ userId: string, skillId: string }> = toRequestHandler(
+    async (req) => {
+        const userId = parseInt(req.params.userId);
+        if (isNaN(userId)) {
+            return { success: false, errorMessage: "Invalid CI" };
+        }
+
+        const skillId = parseInt(req.params.skillId);
+        if (isNaN(skillId)) {
+            return { success: false, errorMessage: "Invalid skill id" };
+        }
+
+        const res = deleteSkillOfUser({ci: userId, id_hab: skillId});
+        return res;
+    }
+);
