@@ -123,8 +123,8 @@ export async function deleteSkillOfUser(id: SkillOfUserId): Promise<Result<void>
     return mapResult(sqlRes, _ => void 0);
 }
 
-export async function updateSkillOfUser(id: SkillOfUserId, newDescripcion: string | null): Promise<Result<void>> {
-    const sqlRes = await dbConn.update({
+export async function updateSkillOfUser(id: SkillOfUserId, newDescripcion: string | null): Promise<Result<number | undefined>> {
+    return await dbConn.update({
         table: "usuario_tiene_habilidad",
         values: {
             descripcion: newDescripcion
@@ -134,5 +134,4 @@ export async function updateSkillOfUser(id: SkillOfUserId, newDescripcion: strin
             { column: "id_hab", operation: "=", value: id.id_hab }
         ]
     });
-    return mapResult(sqlRes, _ => void 0);
 }

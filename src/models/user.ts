@@ -1,26 +1,13 @@
-import { DbUser, User, partialUserToDb, userFromDb } from '../interfaces/user';
+import { DbUser, User, dbUserColumns, partialUserToDb, userFromDb } from '../interfaces/user';
 import dbConn from "../configs/db.config";
 import { UserTemplate, userTemplateToDb } from '../interfaces/userTemplate';
 import { Result } from '../types/result';
-import bcrypt from 'bcryptjs';
-import { throwIfUndef } from '../lib';
-import { mapResult, unwrapResult } from '../helpers/resultHelpers';
+import { unwrapResult } from '../helpers/resultHelpers';
 
 export async function getUsers(): Promise<User[]> {
     const sqlRes = await dbConn.select({
         table: "usuario",
-        columns: [
-            "ci",
-            "nombre",
-            "apellido",
-            "email",
-            "geo_dist",
-            "geo_estado",
-            "is_admin",
-            "ciudad",
-            "departamento",
-            "direccion"
-        ]
+        columns: dbUserColumns
     });
 
     const res: DbUser[] = unwrapResult(sqlRes);
@@ -38,18 +25,7 @@ export async function findByCredentials(ci: string, hashpwd: string): Promise<Us
 export async function findByCI(ci: string): Promise<User | undefined> {
     const sqlRes = await dbConn.select({
         table: "usuario",
-        columns: [
-            "ci",
-            "nombre",
-            "apellido",
-            "email",
-            "geo_dist",
-            "geo_estado",
-            "is_admin",
-            "ciudad",
-            "departamento",
-            "direccion"
-        ],
+        columns: dbUserColumns,
         conditions: [
             { column: "ci", operation: "=", value: ci }
         ]
@@ -69,16 +45,12 @@ export async function newUser(user: UserTemplate): Promise<Result<number>> {
         values: dbUser
     });
 
-    return mapResult(result, data => data.at(0));
+    return result;
 }
 
 // It's not the same that an object has no attribute,
 // or that it has that attribute with the value 'undefined'
 export async function updateUser(ci: number, user: Omit<Partial<User>, "id">): Promise<Result<number | undefined>> {
-    if (Object.keys(user).length <= 0) {
-        return { success: true, data: undefined };
-    }
-
     const dbUser = partialUserToDb(user);
 
     return await dbConn.update({
