@@ -83,7 +83,7 @@ export async function newUser(user: UserTemplate): Promise<Result<number>> {
         idColumns: ["ci"],
         values: temp
     });
-    return result.success ? { success: true, data: result.data[0] } : result;
+    return result;
 }
 
 // It's not the same that an object has no attribute,

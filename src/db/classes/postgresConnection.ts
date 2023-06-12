@@ -37,6 +37,7 @@ export class PostgresConnection implements DatabaseConnection {
 
         return resFromPromise(
             this.sql`INSERT INTO ${sqlTable} ${sqlValues} RETURNING ${sqlIdColumns}`
+                .then(v => v[0])
         );
     }
 
