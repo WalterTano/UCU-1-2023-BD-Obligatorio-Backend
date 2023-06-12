@@ -1,10 +1,10 @@
 import { RequestHandler } from "express";
 import { toRequestHandler } from "../helpers/controllers.helpers";
-import { getSkillNames, getSkillsOfUser } from "../models/skill";
+import { getSkillNames, getSkillsOfUser, newSkillOfUser } from "../models/skill";
 import { isNotUndefined } from "../helpers/isNotUndefined";
 
 
-export const getSkills: RequestHandler<{userId: string}> = toRequestHandler(
+export const getSkills: RequestHandler<{ userId: string }> = toRequestHandler(
     async (req) => {
         const userId = parseInt(req.params.userId);
         if (isNaN(userId)) {
@@ -24,18 +24,34 @@ export const getSkills: RequestHandler<{userId: string}> = toRequestHandler(
     }
 );
 
-export const getSkill: RequestHandler<{userId: string, skillId: string}> = async (req, res) => {
+export const getSkill: RequestHandler<{ userId: string, skillId: string }> = async (req, res) => {
     res.status(500).send("Not implemented yet");
 };
 
-export const postSkill: RequestHandler<{userId: string}> = async (req, res) => {
+export const postSkill: RequestHandler<{ userId: string }> = toRequestHandler(
+    async (req) => {
+        const userId = parseInt(req.params.userId);
+        if (isNaN(userId)) {
+            return { success: false, errorMessage: "Invalid CI" };
+        }
+
+        const { descripcion, habilidad } = req.body;
+        if (typeof descripcion != "string" && typeof descripcion != "undefined") {
+            return { success: false, errorMessage: "Invalid description" };
+        }
+        if (typeof habilidad != "string" && typeof habilidad != "number") {
+            return { success: false, errorMessage: "Invalid skill id" };
+        }
+
+        const res = await newSkillOfUser(userId, { descripcion, habilidad });
+        return { success: true, data: res };
+    }
+);
+
+export const putSkill: RequestHandler<{ userId: string, skillId: string }> = async (req, res) => {
     res.status(500).send("Not implemented yet");
 };
 
-export const putSkill: RequestHandler<{userId: string, skillId: string}> = async (req, res) => {
-    res.status(500).send("Not implemented yet");
-};
-
-export const deleteSkill: RequestHandler<{userId: string, skillId: string}> = async (req, res) => {
+export const deleteSkill: RequestHandler<{ userId: string, skillId: string }> = async (req, res) => {
     res.status(500).send("Not implemented yet");
 };
