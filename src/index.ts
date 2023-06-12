@@ -29,8 +29,4 @@ app.use(BASE_ROUTE, authRouter);
 app.use(BASE_ROUTE, usersRouter);
 app.use(BASE_ROUTE, skillsRouter);
 
-app.get("/", (req, res) => {
-    res.send("Hello world");
-});
-
 app.listen(PORT, () => console.log(`listening on port ${PORT}`));
