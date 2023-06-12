@@ -27,7 +27,7 @@ export const postUser: RequestHandler = handleErrors(
         const input = req.body;
 
         if (!checkUserTemplate(input)) {
-            const response: Result<never> = { success: false, errorMsg: "Invalid data" };
+            const response: Result<never> = { success: false, errorMessage: "Invalid data" };
             res.status(400).json(response);
             return;
         }
@@ -45,7 +45,7 @@ export const putUser: RequestHandler<{ userId: string }> = handleErrors(
     async (req, res) => {
         const userCI = parseInt(req.params.userId);
         if (isNaN(userCI)) {
-            const response: Result<never> = { success: false, errorMsg: "Invalid CI" };
+            const response: Result<never> = { success: false, errorMessage: "Invalid CI" };
             return res.status(400).json(response);
         }
 
@@ -62,7 +62,7 @@ export const deleteUser: RequestHandler<{ userId: string }> = handleErrors(
     async (req, res) => {
         const userId = parseInt(req.params.userId);
         if (isNaN(userId)) {
-            const response: Result<never> = { success: false, errorMsg: "Invalid CI" };
+            const response: Result<never> = { success: false, errorMessage: "Invalid CI" };
             return res.status(400).json(response);
         }
 
