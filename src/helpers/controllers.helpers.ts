@@ -21,7 +21,7 @@ export function handleErrors<T>(handler: RequestHandler<T>): RequestHandler<T> {
         } catch (e) {
             console.error(e);
             if (!res.writableEnded) {
-                const msg: Result<never> = { success: false, errorMsg: "Internal server error" };
+                const msg: Result<never> = { success: false, errorMessage: "Internal server error" };
                 res.status(500).json(msg);
             }
         }

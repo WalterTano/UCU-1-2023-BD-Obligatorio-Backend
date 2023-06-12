@@ -6,6 +6,6 @@ export async function resFromPromise<T>(promise: Promise<T>): Promise<Result<T>>
         return { success: true, data: res };
     } catch (e) {
         const msg = e instanceof Error ? e.message : (e as any).toString();
-        return { success: false, errorMsg: msg };
+        return { success: false, errorMessage: msg };
     }
 }

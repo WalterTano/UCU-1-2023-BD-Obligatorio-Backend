@@ -27,7 +27,7 @@ export async function getUsers(): Promise<User[]> {
 
     if (!sqlRes.success) {
         // TODO, mejorar manejo de errores
-        throw new Error(sqlRes.errorMsg);
+        throw new Error(sqlRes.errorMessage);
     }
 
     return sqlRes.data;
@@ -63,7 +63,7 @@ export async function findByCI(ci: string): Promise<User | undefined> {
 
     if (!sqlRes.success) {
         // TODO, mejorar manejo de errores
-        throw new Error(sqlRes.errorMsg);
+        throw new Error(sqlRes.errorMessage);
     }
 
     return sqlRes.data[0];

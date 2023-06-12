@@ -26,7 +26,7 @@ export const postUser: RequestHandler = toRequestHandler(
         const input = req.body;
 
         if (!checkUserTemplate(input)) {
-            return { success: false, errorMsg: "Invalid data" };
+            return { success: false, errorMessage: "Invalid data" };
         }
 
         const result = await newUser(input);
@@ -38,7 +38,7 @@ export const putUser: RequestHandler<{ userId: string }> = toRequestHandler(
     async (req) => {
         const userCI = parseInt(req.params.userId);
         if (isNaN(userCI)) {
-            return { success: false, errorMsg: "Invalid CI" };
+            return { success: false, errorMessage: "Invalid CI" };
         }
 
         const result = await updateUser(userCI, req.body);
@@ -50,7 +50,7 @@ export const deleteUser: RequestHandler<{ userId: string }> = toRequestHandler(
     async (req) => {
         const userId = parseInt(req.params.userId);
         if (isNaN(userId)) {
-            return { success: false, errorMsg: "Invalid CI" };
+            return { success: false, errorMessage: "Invalid CI" };
         }
 
         const result = await deleteUserModel(userId);
