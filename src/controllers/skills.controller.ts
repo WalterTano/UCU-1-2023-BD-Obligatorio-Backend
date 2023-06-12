@@ -1,10 +1,13 @@
 import { RequestHandler } from "express";
 import { toRequestHandler } from "../helpers/controllers.helpers";
-import { getSkills as getSkillsModel, getSkill as getSkillModel, getSkillOfUser, getSkillsOfUser } from "../models/skill";
+import { getSkillsById, getSkillById, getSkillOfUser, getSkillsOfUser } from "../models/skill";
 import { isNotUndefined } from "../helpers/isNotUndefined";
 
+export const getSkills: RequestHandler = toRequestHandler(
+    async (req)
+);
 
-export const getSkills: RequestHandler<{ userId: string }> = toRequestHandler(
+export const getSkillsByUser: RequestHandler<{ userId: string }> = toRequestHandler(
     async (req) => {
         const userId = parseInt(req.params.userId);
         if (isNaN(userId)) {
@@ -12,7 +15,7 @@ export const getSkills: RequestHandler<{ userId: string }> = toRequestHandler(
         }
 
         const skillsOfUser = await getSkillsOfUser(userId);
-        const skills = await getSkillsModel(skillsOfUser.map(s => s.id_hab));
+        const skills = await getSkillsById(skillsOfUser.map(s => s.id_hab));
 
         const data = skillsOfUser.map(skillOfUser => {
             const skill = skills.filter(skill => skill.id == skillOfUser.id_hab).at(0);
@@ -41,7 +44,7 @@ export const getSkill: RequestHandler<{ userId: string, skillId: string }> = toR
             return { success: false, errorMessage: `The user ${userId} doesn't have the skill ${skillId}` };
         }
 
-        const skill = await getSkillModel(skillId);
+        const skill = await getSkillById(skillId);
         if (skill == undefined) {
             return { success: false, errorMessage: `The user ${userId} doesn't have the skill ${skillId}` };
         }
