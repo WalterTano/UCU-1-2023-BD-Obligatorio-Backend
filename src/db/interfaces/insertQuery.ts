@@ -6,4 +6,3 @@ export interface InsertQuery {
     idColumns: string[],
     values: GenericData
 }
-
