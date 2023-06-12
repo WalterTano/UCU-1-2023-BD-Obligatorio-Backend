@@ -74,7 +74,7 @@ export const postSkill: RequestHandler<{ userId: string }> = toRequestHandler(
             return { success: false, errorMessage: "Invalid skill id" };
         }
 
-        const res = await newSkillOfUser(userId, { descripcion, habilidad });
+        const res = await newSkillOfUser(userId, { description: descripcion, skillId: habilidad });
         return res;
     }
 );
