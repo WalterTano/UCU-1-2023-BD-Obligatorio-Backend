@@ -30,13 +30,13 @@ export class PostgresConnection implements DatabaseConnection {
         );
     }
 
-    insert(q: InsertQuery): Promise<Result<void>> {
+    insert(q: InsertQuery): Promise<Result<any[]>> {
         const sqlTable = this.sql(q.table);
         const sqlValues = this.sql(q.values);
+        const sqlIdColumns = this.sql(q.idColumns);
 
         return resFromPromise(
-            this.sql`INSERT INTO ${sqlTable} ${sqlValues}`
-                .then(_ => { })
+            this.sql`INSERT INTO ${sqlTable} ${sqlValues} RETURNING ${sqlIdColumns}`
         );
     }
 

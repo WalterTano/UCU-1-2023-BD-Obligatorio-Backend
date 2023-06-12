@@ -69,7 +69,7 @@ export async function findByCI(ci: string): Promise<User | undefined> {
     return sqlRes.data[0];
 }
 
-export async function newUser(user: UserTemplate): Promise<Result<void>> {
+export async function newUser(user: UserTemplate): Promise<Result<number>> {
     const password = user.password;
 
     const temp: any = {...user};
@@ -78,10 +78,12 @@ export async function newUser(user: UserTemplate): Promise<Result<void>> {
     const hashpwd = await bcrypt.hash(password, BCRYPT_SALT);
     temp.hashpwd = hashpwd;
 
-    return await dbConn.insert({
+    const result = await dbConn.insert({
         table: "usuario",
+        idColumns: ["ci"],
         values: temp
     });
+    return result.success ? { success: true, data: result.data[0] } : result;
 }
 
 // It's not the same that an object has no attribute,
