@@ -10,7 +10,7 @@ const BCRYPT_SALT = throwIfUndef(process.env.BCRYPT_SALT, "BCRYPT_SALT");
 
 export async function getUsers(): Promise<User[]> {
     const sqlRes = await dbConn.select({
-        table: "usuario",
+        tables: ["usuario", []],
         columns: [
             "ci",
             "nombre",
@@ -43,7 +43,7 @@ export async function findByCredentials(ci: string, hashpwd: string): Promise<Us
 
 export async function findByCI(ci: string): Promise<User | undefined> {
     const sqlRes = await dbConn.select({
-        table: "usuario",
+        tables: ["usuario", []],
         columns: [
             "ci",
             "nombre",

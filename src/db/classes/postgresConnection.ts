@@ -10,6 +10,7 @@ import { InsertQuery } from "../interfaces/insertQuery";
 import { UpdateQuery } from "../interfaces/updateQuery";
 import { DeleteQuery } from "../interfaces/deleteQuery";
 import { PostgresConfig } from "../interfaces/postgresInput";
+import { tablesToSql } from "../helpers/tablesToSql";
 
 export class PostgresConnection implements DatabaseConnection {
     private readonly sql: Sql;
@@ -20,7 +21,7 @@ export class PostgresConnection implements DatabaseConnection {
 
     select(q: SelectQuery): Promise<Result<any[]>> {
         const sqlCols = q.columns ? this.sql(q.columns) : this.sql`*`;
-        const sqlTable = this.sql(q.table);
+        const sqlTable = tablesToSql(this.sql, q.tables);
         const sqlConditions = conditionsToSql(this.sql, q.conditions);
         const sqlOrder = orderColsToSql(this.sql, q.orderCols);
         const sqlLimit = limitToSql(this.sql, q.limit);
