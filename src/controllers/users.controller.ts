@@ -1,76 +1,59 @@
 import { RequestHandler } from "express";
 import { findByCI, getUsers as getUsersModel, updateUser, deleteUser as deleteUserModel, newUser } from "../models/user";
 import { checkUserTemplate } from "../helpers/userTemplate";
-import { Result } from "../types/result";
-import { handleErrors } from "../helpers/controllers.helpers";
+import { toRequestHandler } from "../helpers/controllers.helpers";
 
-export const getUsers: RequestHandler = async (_req, res) => {
+export const getUsers: RequestHandler = toRequestHandler(async () => {
     const users = await getUsersModel();
-    res.json(users);
-};
+    return { success: true, data: users };
+});
 
-export const getUser: RequestHandler<{ userId: string }> = handleErrors(
-    async (req, res) => {
+export const getUser: RequestHandler<{ userId: string }> = toRequestHandler(
+    async (req) => {
         const userId = req.params.userId;
         const user = await findByCI(userId);
 
         if (user) {
-            res.json(user);
+            return { success: true, data: user };
         } else {
-            res.status(404).end();
+            return { success: false, errorMsg: "User not found" }
         }
     }
 );
 
-export const postUser: RequestHandler = handleErrors(
-    async (req, res) => {
+export const postUser: RequestHandler = toRequestHandler(
+    async (req) => {
         const input = req.body;
 
         if (!checkUserTemplate(input)) {
-            const response: Result<never> = { success: false, errorMsg: "Invalid data" };
-            res.status(400).json(response);
-            return;
+            return { success: false, errorMsg: "Invalid data" };
         }
 
         const result = await newUser(input);
-        if (result.success) {
-            res.status(200).json(result);
-        } else {
-            res.status(400).json(result);
-        }
+        return result;
     }
 );
 
-export const putUser: RequestHandler<{ userId: string }> = handleErrors(
-    async (req, res) => {
+export const putUser: RequestHandler<{ userId: string }> = toRequestHandler(
+    async (req) => {
         const userCI = parseInt(req.params.userId);
         if (isNaN(userCI)) {
-            const response: Result<never> = { success: false, errorMsg: "Invalid CI" };
-            return res.status(400).json(response);
+            return { success: false, errorMsg: "Invalid CI" };
         }
 
         const result = await updateUser(userCI, req.body);
-        if (result.success) {
-            res.status(200).json(result);
-        } else {
-            res.status(400).json(result);
-        }
+        return result;
     }
 );
 
-export const deleteUser: RequestHandler<{ userId: string }> = handleErrors(
-    async (req, res) => {
+export const deleteUser: RequestHandler<{ userId: string }> = toRequestHandler(
+    async (req) => {
         const userId = parseInt(req.params.userId);
         if (isNaN(userId)) {
-            const response: Result<never> = { success: false, errorMsg: "Invalid CI" };
-            return res.status(400).json(response);
+            return { success: false, errorMsg: "Invalid CI" };
         }
 
         const result = await deleteUserModel(userId);
-        if (result.success) {
-            res.status(200).json(result);
-        } else {
-            res.status(400).json(result);
-        }
+        return result;
     }
 );

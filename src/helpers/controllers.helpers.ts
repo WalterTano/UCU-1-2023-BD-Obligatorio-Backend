@@ -1,5 +1,18 @@
-import { RequestHandler } from "express";
+import { Request, RequestHandler, Response } from "express";
 import { Result } from "../types/result";
+
+export function toRequestHandler<T, U>(fn: (req: Request<T>) => Promise<Result<U>>): RequestHandler<T> {
+    return handleErrors(
+        async (req, res) => {
+            const result = await fn(req);
+            if (result.success) {
+                res.status(200).json(result);
+            } else {
+                res.status(400).json(result);
+            }
+        }
+    );
+}
 
 export function handleErrors<T>(handler: RequestHandler<T>): RequestHandler<T> {
     return async (req, res, next) => {
