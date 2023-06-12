@@ -1,10 +1,13 @@
 import { RequestHandler } from "express";
 import { toRequestHandler } from "../helpers/controllers.helpers";
-import { getSkillsById, getSkillById, getSkillOfUser, getSkillsOfUser } from "../models/skill";
+import { getSkillsById, getSkillById, getSkillOfUser, getSkillsOfUser, newSkillOfUser, getAllSkills } from "../models/skill";
 import { isNotUndefined } from "../helpers/isNotUndefined";
 
 export const getSkills: RequestHandler = toRequestHandler(
-    async (req)
+    async (_req) => {
+        const skills = getAllSkills();
+        return { success: true, data: skills };
+    }
 );
 
 export const getSkillsByUser: RequestHandler<{ userId: string }> = toRequestHandler(
@@ -27,8 +30,7 @@ export const getSkillsByUser: RequestHandler<{ userId: string }> = toRequestHand
     }
 );
 
-<<<<<<< HEAD
-export const getSkill: RequestHandler<{ userId: string, skillId: string }> = toRequestHandler(
+export const getSkillByUser: RequestHandler<{ userId: string, skillId: string }> = toRequestHandler(
     async (req) => {
         const userId = parseInt(req.params.userId);
         if (isNaN(userId)) {
@@ -57,15 +59,6 @@ export const getSkill: RequestHandler<{ userId: string, skillId: string }> = toR
     }
 );
 
-export const postSkill: RequestHandler<{ userId: string }> = async (req, res) => {
-    res.status(500).send("Not implemented yet");
-};
-
-=======
-export const getSkill: RequestHandler<{ userId: string, skillId: string }> = async (req, res) => {
-    res.status(500).send("Not implemented yet");
-};
-
 export const postSkill: RequestHandler<{ userId: string }> = toRequestHandler(
     async (req) => {
         const userId = parseInt(req.params.userId);
@@ -86,7 +79,6 @@ export const postSkill: RequestHandler<{ userId: string }> = toRequestHandler(
     }
 );
 
->>>>>>> skill-API/main
 export const putSkill: RequestHandler<{ userId: string, skillId: string }> = async (req, res) => {
     res.status(500).send("Not implemented yet");
 };

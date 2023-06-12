@@ -62,6 +62,21 @@ export async function getSkillsById(skillIds: number[]): Promise<Skill[]> {
     return sqlRes.data;
 }
 
+export async function getSkillById(skillId: number): Promise<Skill | undefined> {
+    const sqlRes = await dbConn.select({
+        columns: ["id", "nombre"],
+        table: "habilidad",
+        conditions: [
+            { column: "id", operation: "=", value: skillId }
+        ]
+    });
+
+    if (!sqlRes.success) {
+        throw new Error(sqlRes.errorMessage);
+    }
+
+    return sqlRes.data.at(0);
+}
 async function getIdOfSkill(name: string): Promise<number | undefined> {
     const sqlRes = await dbConn.select({
         columns: ["id"],
@@ -99,3 +114,4 @@ export async function newSkillOfUser(ci: number, info: SkillOfUserTemplate): Pro
 
     return unwrapResult(sqlRes)[0];
 }
+

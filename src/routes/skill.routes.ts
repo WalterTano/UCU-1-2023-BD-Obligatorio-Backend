@@ -1,18 +1,23 @@
 import { RequestHandler, Router } from "express";
-import { deleteSkill, getSkill, getSkills, postSkill, putSkill } from "../controllers/skills.controller";
+import { deleteSkill, getSkillByUser, getSkills, getSkillsByUser, postSkill, putSkill } from "../controllers/skills.controller";
 
 
 const router = Router();
-const BASE_ROUTE = '/users/:userId/skills';
+
+const BASE_ROUTE = '/skills';
 
 router.get(BASE_ROUTE, getSkills);
 
-router.get(`${BASE_ROUTE}/:skillId`, getSkill);
+const USER_LINKED_BASE_ROUTE = '/users/:userId/skills';
 
-router.post(BASE_ROUTE, postSkill);
+router.get(USER_LINKED_BASE_ROUTE, getSkillsByUser);
 
-router.put(`${BASE_ROUTE}/:skillId`, putSkill);
+router.get(`${USER_LINKED_BASE_ROUTE}/:skillId`, getSkillByUser);
 
-router.delete(`${BASE_ROUTE}/:skillId`, deleteSkill);
+router.post(USER_LINKED_BASE_ROUTE, postSkill);
+
+router.put(`${USER_LINKED_BASE_ROUTE}/:skillId`, putSkill);
+
+router.delete(`${USER_LINKED_BASE_ROUTE}/:skillId`, deleteSkill);
 
 export const skillsRouter: RequestHandler<{userId: string}> = router;
