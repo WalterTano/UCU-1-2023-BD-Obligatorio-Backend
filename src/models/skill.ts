@@ -1,6 +1,8 @@
 import dbConn from "../configs/db.config";
+import { unwrapResult } from "../helpers/unwrapResult";
 import { Skill } from "../interfaces/skill";
 import { SkillOfUser } from "../interfaces/skillOfUser";
+import { SkillOfUserTemplate } from "../interfaces/skillOfUserTemplate";
 
 export async function getAllSkills(): Promise<Skill[]> {
     const sqlRes = await dbConn.select({
@@ -8,6 +10,7 @@ export async function getAllSkills(): Promise<Skill[]> {
         table: "habilidad"
     });
 
+    return unwrapResult(sqlRes);
 }
 
 export async function getSkillsOfUser(ci: number): Promise<SkillOfUser[]> {
@@ -59,12 +62,12 @@ export async function getSkillsById(skillIds: number[]): Promise<Skill[]> {
     return sqlRes.data;
 }
 
-export async function getSkillById(skillId: number): Promise<Skill | undefined> {
+async function getIdOfSkill(name: string): Promise<number | undefined> {
     const sqlRes = await dbConn.select({
-        columns: ["id", "nombre"],
+        columns: ["id"],
         table: "habilidad",
         conditions: [
-            { column: "id", operation: "=", value: skillId }
+            { column: "nombre", operation: "=", value: name }
         ]
     });
 
@@ -72,5 +75,27 @@ export async function getSkillById(skillId: number): Promise<Skill | undefined> 
         throw new Error(sqlRes.errorMessage);
     }
 
-    return sqlRes.data.at(0);
+    const res = sqlRes.data.at(0);
+    return res && res.id;
+}
+
+type SkillOfUserId = {id_hab: number, ci: number};
+export async function newSkillOfUser(ci: number, info: SkillOfUserTemplate): Promise<SkillOfUserId> {
+    const hab = info.habilidad;
+    const habId = typeof hab === "number" ? hab : await getIdOfSkill(hab);
+    if (habId == undefined) {
+        throw new Error("Unknown skill");
+    }
+
+    const sqlRes = await dbConn.insert({
+        idColumns: ["id_hab", "ci"],
+        table: "usuario_tiene_habilidad",
+        values: {
+            id_hab: habId,
+            ci: ci,
+            descripcion: info.descripcion || null
+        }
+    });
+
+    return unwrapResult(sqlRes)[0];
 }

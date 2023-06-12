@@ -27,6 +27,7 @@ export const getSkillsByUser: RequestHandler<{ userId: string }> = toRequestHand
     }
 );
 
+<<<<<<< HEAD
 export const getSkill: RequestHandler<{ userId: string, skillId: string }> = toRequestHandler(
     async (req) => {
         const userId = parseInt(req.params.userId);
@@ -60,6 +61,32 @@ export const postSkill: RequestHandler<{ userId: string }> = async (req, res) =>
     res.status(500).send("Not implemented yet");
 };
 
+=======
+export const getSkill: RequestHandler<{ userId: string, skillId: string }> = async (req, res) => {
+    res.status(500).send("Not implemented yet");
+};
+
+export const postSkill: RequestHandler<{ userId: string }> = toRequestHandler(
+    async (req) => {
+        const userId = parseInt(req.params.userId);
+        if (isNaN(userId)) {
+            return { success: false, errorMessage: "Invalid CI" };
+        }
+
+        const { descripcion, habilidad } = req.body;
+        if (typeof descripcion != "string" && typeof descripcion != "undefined") {
+            return { success: false, errorMessage: "Invalid description" };
+        }
+        if (typeof habilidad != "string" && typeof habilidad != "number") {
+            return { success: false, errorMessage: "Invalid skill id" };
+        }
+
+        const res = await newSkillOfUser(userId, { descripcion, habilidad });
+        return { success: true, data: res };
+    }
+);
+
+>>>>>>> skill-API/main
 export const putSkill: RequestHandler<{ userId: string, skillId: string }> = async (req, res) => {
     res.status(500).send("Not implemented yet");
 };
