@@ -1,7 +1,8 @@
 import dbConn from "../configs/db.config";
 import { mapResult, unwrapResult } from "../helpers/resultHelpers";
-import { Skill } from "../interfaces/skill";
-import { SkillOfUser } from "../interfaces/skillOfUser";
+import { DbSkill, Skill, skillFromDb } from "../interfaces/skill";
+import { DbSkillOfUser, SkillOfUser, skillOfUserFromDb } from "../interfaces/skillOfUser";
+import { DbSkillOfUserId, SkillOfUserId } from "../interfaces/skillOfUserId";
 import { SkillOfUserTemplate } from "../interfaces/skillOfUserTemplate";
 import { Result } from "../types/result";
 
@@ -11,7 +12,9 @@ export async function getAllSkills(): Promise<Skill[]> {
         table: "habilidad"
     });
 
-    return unwrapResult(sqlRes);
+    const res: DbSkill[] = unwrapResult(sqlRes);
+
+    return res.map(skillFromDb);
 }
 
 export async function getSkillsOfUser(ci: number): Promise<SkillOfUser[]> {
@@ -23,11 +26,9 @@ export async function getSkillsOfUser(ci: number): Promise<SkillOfUser[]> {
         ]
     });
 
-    if (!sqlRes.success) {
-        throw new Error(sqlRes.errorMessage);
-    }
+    const res: DbSkillOfUser[] = unwrapResult(sqlRes);
 
-    return sqlRes.data;
+    return res.map(skillOfUserFromDb);
 }
 
 export async function getSkillOfUser(ci: number, skillId: number): Promise<SkillOfUser | undefined> {
@@ -40,11 +41,9 @@ export async function getSkillOfUser(ci: number, skillId: number): Promise<Skill
         ]
     });
 
-    if (!sqlRes.success) {
-        throw new Error(sqlRes.errorMessage);
-    }
+    const res: DbSkillOfUser | undefined = unwrapResult(sqlRes).at(0);
 
-    return sqlRes.data.at(0);
+    return res && skillOfUserFromDb(res);
 }
 
 export async function getSkillsById(skillIds: number[]): Promise<Skill[]> {
@@ -56,11 +55,9 @@ export async function getSkillsById(skillIds: number[]): Promise<Skill[]> {
         ]
     });
 
-    if (!sqlRes.success) {
-        throw new Error(sqlRes.errorMessage);
-    }
+    const res: DbSkill[] = unwrapResult(sqlRes);
 
-    return sqlRes.data;
+    return res.map(skillFromDb);
 }
 
 export async function getSkillById(skillId: number): Promise<Skill | undefined> {
@@ -72,12 +69,11 @@ export async function getSkillById(skillId: number): Promise<Skill | undefined> 
         ]
     });
 
-    if (!sqlRes.success) {
-        throw new Error(sqlRes.errorMessage);
-    }
+    const res: DbSkill | undefined = unwrapResult(sqlRes).at(0);
 
-    return sqlRes.data.at(0);
+    return res && skillFromDb(res);
 }
+
 async function getIdOfSkill(name: string): Promise<number | undefined> {
     const sqlRes = await dbConn.select({
         columns: ["id"],
@@ -87,18 +83,14 @@ async function getIdOfSkill(name: string): Promise<number | undefined> {
         ]
     });
 
-    if (!sqlRes.success) {
-        throw new Error(sqlRes.errorMessage);
-    }
+    const res: {id: number} | undefined = unwrapResult(sqlRes).at(0);
 
-    const res = sqlRes.data.at(0);
     return res && res.id;
 }
 
-type SkillOfUserId = {id_hab: number, ci: number};
 // TODO: Change return type to Promise<Result<SkillOfUserId>>
 export async function newSkillOfUser(ci: number, info: SkillOfUserTemplate): Promise<Result<SkillOfUserId>> {
-    const hab = info.habilidad;
+    const hab = info.skillId;
     const habId = typeof hab === "number" ? hab : await getIdOfSkill(hab);
     if (habId == undefined) {
         return { success: false, errorMessage: "Unknown skill" };
@@ -110,11 +102,14 @@ export async function newSkillOfUser(ci: number, info: SkillOfUserTemplate): Pro
         values: {
             id_hab: habId,
             ci: ci,
-            descripcion: info.descripcion || null
+            descripcion: info.description || null
         }
     });
 
-    return { success: true, data: unwrapResult(sqlRes)[0] };
+    return mapResult(sqlRes, raw => {
+        const data: DbSkillOfUserId = raw[0];
+        return { ci: data.userId, id_hab: data.skillId };
+    });
 }
 
 export async function deleteSkillOfUser(id: SkillOfUserId): Promise<Result<void>> {

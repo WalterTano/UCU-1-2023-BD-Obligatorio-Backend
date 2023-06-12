@@ -1,12 +1,10 @@
-import { User } from '../interfaces/user';
+import { DbUser, User, partialUserToDb, userFromDb } from '../interfaces/user';
 import dbConn from "../configs/db.config";
-import { UserTemplate } from '../interfaces/userTemplate';
+import { UserTemplate, userTemplateToDb } from '../interfaces/userTemplate';
 import { Result } from '../types/result';
 import bcrypt from 'bcryptjs';
 import { throwIfUndef } from '../lib';
-import { PutBucketEncryptionRequestFilterSensitiveLog } from '@aws-sdk/client-s3';
-
-const BCRYPT_SALT = throwIfUndef(process.env.BCRYPT_SALT, "BCRYPT_SALT");
+import { unwrapResult } from '../helpers/resultHelpers';
 
 export async function getUsers(): Promise<User[]> {
     const sqlRes = await dbConn.select({
@@ -25,12 +23,8 @@ export async function getUsers(): Promise<User[]> {
         ]
     });
 
-    if (!sqlRes.success) {
-        // TODO, mejorar manejo de errores
-        throw new Error(sqlRes.errorMessage);
-    }
-
-    return sqlRes.data;
+    const res: DbUser[] = unwrapResult(sqlRes);
+    return res.map(userFromDb);
 }
 
 export async function getPassword(ci: string): Promise<string> {
@@ -61,41 +55,35 @@ export async function findByCI(ci: string): Promise<User | undefined> {
         ]
     });
 
-    if (!sqlRes.success) {
-        // TODO, mejorar manejo de errores
-        throw new Error(sqlRes.errorMessage);
-    }
+    const res: DbUser | undefined = unwrapResult<DbUser[]>(sqlRes).at(0);
 
-    return sqlRes.data[0];
+    return res && userFromDb(res);
 }
 
 export async function newUser(user: UserTemplate): Promise<Result<number>> {
-    const password = user.password;
-
-    const temp: any = {...user};
-    delete temp.password;
-
-    const hashpwd = await bcrypt.hash(password, BCRYPT_SALT);
-    temp.hashpwd = hashpwd;
+    const dbUser = userTemplateToDb(user);
 
     const result = await dbConn.insert({
         table: "usuario",
         idColumns: ["ci"],
-        values: temp
+        values: dbUser
     });
+
     return result;
 }
 
 // It's not the same that an object has no attribute,
 // or that it has that attribute with the value 'undefined'
-export async function updateUser(ci: number, user: Omit<Partial<User>, "ci">): Promise<Result<number | undefined>> {
+export async function updateUser(ci: number, user: Omit<Partial<User>, "id">): Promise<Result<number | undefined>> {
     if (Object.keys(user).length <= 0) {
         return { success: true, data: undefined };
     }
 
+    const dbUser = partialUserToDb(user);
+
     return await dbConn.update({
         table: "usuario",
-        values: user,
+        values: dbUser,
         conditions: [
             {column: "ci", operation: "=", value: ci}
         ]
