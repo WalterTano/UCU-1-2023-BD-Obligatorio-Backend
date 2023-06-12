@@ -2,6 +2,7 @@ import dbConn from "../configs/db.config";
 import { mapResult, unwrapResult } from "../helpers/resultHelpers";
 import { DbSkill, Skill, skillFromDb } from "../interfaces/skill";
 import { DbSkillOfUser, SkillOfUser, skillOfUserFromDb } from "../interfaces/skillOfUser";
+import { DbSkillOfUserId, SkillOfUserId } from "../interfaces/skillOfUserId";
 import { SkillOfUserTemplate } from "../interfaces/skillOfUserTemplate";
 import { Result } from "../types/result";
 
@@ -106,8 +107,8 @@ export async function newSkillOfUser(ci: number, info: SkillOfUserTemplate): Pro
     });
 
     return mapResult(sqlRes, raw => {
-        const data: SkillOfUserId
-        data[0]
+        const data: DbSkillOfUserId = raw[0];
+        return { ci: data.userId, id_hab: data.skillId };
     });
 }
 

@@ -1,3 +1,4 @@
+import { encrypt } from "../helpers/crypt";
 import { GeoConfig } from "./geoConfig";
 import { LocalGeolocation } from "./localGeoLocation";
 import { geoConfigFromDb, geoConfigToDb, localGeolocationFromDb, localGeolocationToDb } from "./user";
@@ -13,7 +14,7 @@ export interface DbUserTemplate {
     departamento: string,
     ciudad: string,
     direccion: string,
-    password: string,
+    hashpwd: string
 }
 
 export interface UserTemplate {
@@ -26,22 +27,7 @@ export interface UserTemplate {
     password: string
 }
 
-export function userTemplateFromDb(info: DbUserTemplate): UserTemplate {
-    return {
-        id: info.ci,
-        name: info.nombre,
-        email: info.email,
-        isAdmin: info.is_admin,
-        address: localGeolocationFromDb(info),
-        geoConfig: geoConfigFromDb({
-            geo_dist: info.geo_dist || 0,
-            geo_estado: info.geo_estado || false
-        }),
-        password: info.password
-    };
-}
-
-export function userTemplateToDb(info: UserTemplate): DbUserTemplate {
+export async function userTemplateToDb(info: UserTemplate): Promise<DbUserTemplate> {
     return {
         ci: info.id,
         nombre: info.name,
@@ -49,6 +35,6 @@ export function userTemplateToDb(info: UserTemplate): DbUserTemplate {
         is_admin: info.isAdmin,
         ...geoConfigToDb(info.geoConfig),
         ...localGeolocationToDb(info.address),
-        password: info.password
+        hashpwd: await encrypt(info.password)
     };
 }

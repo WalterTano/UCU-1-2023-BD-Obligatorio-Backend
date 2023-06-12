@@ -65,10 +65,28 @@ export function localGeolocationToDb(info: LocalGeolocation): Pick<DbUser, "pais
     };
 }
 
+export function partialLocalGeolocationToDb(info?: Partial<LocalGeolocation>): Partial<Pick<DbUser, "pais" | "departamento" | "ciudad" | "direccion" | "latitud" | "longitud">> {
+    return {
+        pais: info?.country,
+        departamento: info?.province,
+        ciudad: info?.city,
+        direccion: info?.streetAddress,
+        latitud: info?.latitude,
+        longitud: info?.longitude
+    };
+}
+
 export function geoConfigToDb(info: GeoConfig): Pick<DbUser, "geo_dist" | "geo_estado"> {
     return {
         geo_estado: info.active,
         geo_dist: info.maxDistance
+    };
+}
+
+export function partialGeoConfigToDb(info?: Partial<GeoConfig>): Partial<Pick<DbUser, "geo_dist" | "geo_estado">> {
+    return {
+        geo_estado: info?.active,
+        geo_dist: info?.maxDistance
     };
 }
 
@@ -80,5 +98,15 @@ export function userToDb(info: User): DbUser {
         is_admin: info.isAdmin,
         ...localGeolocationToDb(info.address),
         ...geoConfigToDb(info.geoConfig)
+    };
+}
+
+export function partialUserToDb(info: Omit<Partial<User>, "id">): Partial<DbUser> {
+    return {
+        nombre: info.name,
+        email: info.email,
+        is_admin: info.isAdmin,
+        ...partialLocalGeolocationToDb(info.address),
+        ...partialGeoConfigToDb(info.geoConfig)
     };
 }

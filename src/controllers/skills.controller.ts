@@ -18,12 +18,12 @@ export const getSkillsByUser: RequestHandler<{ userId: string }> = toRequestHand
         }
 
         const skillsOfUser = await getSkillsOfUser(userId);
-        const skills = await getSkillsById(skillsOfUser.map(s => s.id_hab));
+        const skills = await getSkillsById(skillsOfUser.map(s => s.skillId));
 
         const data = skillsOfUser.map(skillOfUser => {
-            const skill = skills.filter(skill => skill.id == skillOfUser.id_hab).at(0);
+            const skill = skills.filter(skill => skill.id == skillOfUser.skillId).at(0);
             if (skill == undefined) return undefined;
-            return { ...skillOfUser, nombre: skill.nombre };
+            return { ...skillOfUser, name: skill.name };
         }).filter(isNotUndefined);
 
         return { success: true, data };
@@ -54,7 +54,7 @@ export const getSkillByUser: RequestHandler<{ userId: string, skillId: string }>
 
         return {
             success: true,
-            data: { ...skillOfUser, nombre: skill.nombre }
+            data: { ...skillOfUser, name: skill.name }
         };
     }
 );
