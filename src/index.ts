@@ -7,6 +7,7 @@ import bodyParser from 'body-parser';
 import cors from 'cors';
 import morgan from 'morgan';
 import { usersRouter } from './routes/users.routes';
+import { skillsRouter } from './routes/skill.routes';
 
 const BASE_ROUTE = "/api/v1";
 const PORT = throwIfUndef(process.env.PORT, "PORT");
@@ -26,6 +27,7 @@ app.use(morgan('combined'));
 
 app.use(BASE_ROUTE, authRouter);
 app.use(BASE_ROUTE, usersRouter);
+app.use(BASE_ROUTE, skillsRouter);
 
 app.get("/", (req, res) => {
     res.send("Hello world");

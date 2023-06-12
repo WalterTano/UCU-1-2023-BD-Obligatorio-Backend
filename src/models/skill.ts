@@ -1,4 +1,5 @@
 import dbConn from "../configs/db.config";
+import { Skill } from "../interfaces/skill";
 import { SkillOfUser } from "../interfaces/skillOfUser";
 
 export async function getSkillsOfUser(ci: number): Promise<SkillOfUser[]> {
@@ -17,9 +18,9 @@ export async function getSkillsOfUser(ci: number): Promise<SkillOfUser[]> {
     return sqlRes.data;
 }
 
-export async function getSkillNames(skillIds: number[]): Promise<string[]> {
+export async function getSkillNames(skillIds: number[]): Promise<Skill[]> {
     const sqlRes = await dbConn.select({
-        columns: ["nombre"],
+        columns: ["id", "nombre"],
         table: "habilidad",
         conditions: [
             { column: "id", operation: "IN", value: skillIds }
@@ -30,5 +31,5 @@ export async function getSkillNames(skillIds: number[]): Promise<string[]> {
         throw new Error(sqlRes.errorMessage);
     }
 
-    return sqlRes.data.map(v => v.nombre);
+    return sqlRes.data;
 }
