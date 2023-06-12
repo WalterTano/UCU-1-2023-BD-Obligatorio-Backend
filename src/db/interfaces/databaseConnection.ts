@@ -6,7 +6,7 @@ import { Result } from "../../types/result";
 
 export interface DatabaseConnection {
     select(q: SelectQuery): Promise<Result<any[]>>,
-    insert(q: InsertQuery): Promise<Result<void>>,
+    insert(q: InsertQuery): Promise<Result<any>>,
     update(q: UpdateQuery): Promise<Result<number>>,
     delete(q: DeleteQuery): Promise<Result<number>>
 }
