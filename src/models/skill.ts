@@ -108,7 +108,7 @@ export async function newSkillOfUser(ci: number, info: SkillOfUserTemplate): Pro
 
     return mapResult(sqlRes, raw => {
         const data: DbSkillOfUserId = raw[0];
-        return { ci: data.userId, id_hab: data.skillId };
+        return { userId: data.ci, skillId: data.id_hab };
     });
 }
 
@@ -116,8 +116,8 @@ export async function deleteSkillOfUser(id: SkillOfUserId): Promise<Result<void>
     const sqlRes = await dbConn.delete({
         table: "usuario_tiene_habilidad",
         conditions: [
-            { column: "ci", operation: "=", value: id.ci },
-            { column: "id_hab", operation: "=", value: id.id_hab }
+            { column: "ci", operation: "=", value: id.userId },
+            { column: "id_hab", operation: "=", value: id.skillId }
         ]
     });
     return mapResult(sqlRes, _ => void 0);
@@ -130,8 +130,8 @@ export async function updateSkillOfUser(id: SkillOfUserId, newDescripcion: strin
             descripcion: newDescripcion
         },
         conditions: [
-            { column: "ci", operation: "=", value: id.ci },
-            { column: "id_hab", operation: "=", value: id.id_hab }
+            { column: "ci", operation: "=", value: id.userId },
+            { column: "id_hab", operation: "=", value: id.skillId }
         ]
     });
 }
