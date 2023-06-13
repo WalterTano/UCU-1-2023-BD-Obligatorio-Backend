@@ -1,6 +1,6 @@
 import { encrypt } from "../helpers/crypt";
 import { GeoConfig } from "./geoConfig";
-import { LocalGeolocation } from "./localGeolocation";
+import { LocalGeolocation } from "./localGeoLocation";
 import { geoConfigToDb, localGeolocationToDb } from "./user";
 
 export interface DbUserTemplate {

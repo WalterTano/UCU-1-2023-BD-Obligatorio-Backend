@@ -1,5 +1,5 @@
 import { GeoConfig } from "./geoConfig";
-import { LocalGeolocation } from "./localGeolocation";
+import { LocalGeolocation } from "./localGeoLocation";
 
 export const dbUserColumns: (keyof DbUser)[] = [
     "ci", "nombre", "geo_dist", "geo_estado", "is_admin",
