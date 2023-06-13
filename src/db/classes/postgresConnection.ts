@@ -43,9 +43,20 @@ export class PostgresConnection implements DatabaseConnection {
 
     // TODO: Fix error
     // Throws an error if q.values is an empty object
-    update(q: UpdateQuery): Promise<Result<number>> {
+    update(q: UpdateQuery): Promise<Result<number | undefined>> {
+        const values = q.values;
+        for (let key in values) {
+            if (values[key] === undefined) {
+                delete values[key];
+            }
+        }
+
+        if (Object.keys(values).length == 0) {
+            return Promise.resolve({success: true, data: undefined});
+        }
+
         const sqlTable = this.sql(q.table);
-        const sqlValues = this.sql(q.values);
+        const sqlValues = this.sql(values);
         const sqlConditions = conditionsToSql(this.sql, q.conditions);
 
         return resFromPromise(

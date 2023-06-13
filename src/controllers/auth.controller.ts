@@ -27,7 +27,7 @@ export const doAuth: RequestHandler = async (req, res) => {
         });
     }
     
-    const token = await generateJWT(ci, user.ci.toString());
+    const token = await generateJWT(ci, user.id.toString());
 
     return res.status(200).json({
         success: true,
@@ -52,7 +52,7 @@ export const renewToken: RequestHandler = async (req, res) => {
         return;
     }
 
-    const token = await generateJWT( ci, user.ci.toString() );
+    const token = await generateJWT( ci, user.id.toString() );
 
     return res.status(200).json({
         success: true,
