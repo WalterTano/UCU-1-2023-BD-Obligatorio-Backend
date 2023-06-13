@@ -3,6 +3,9 @@ import { SelectQuery } from "../db/interfaces/selectQuery";
 import { unwrapResult } from "../helpers/resultHelpers";
 import { DbNecessity, Necessity, necessityFromDb } from "../interfaces/necessity"
 
+// TODO: create endpoint for all necesities
+// TODO: create endpoint for all necesities with filters
+
 // TODO: do the same for other models
 async function selectAllFromNecessities(query: Omit<SelectQuery, "table" | "columns">): Promise<DbNecessity[]> {
     const sqlRes = await dbConn.select({
