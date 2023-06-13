@@ -1,9 +1,9 @@
-export interface SkillOfUserId {
+export interface DbSkillOfUserId {
     id_hab: number,
     ci: number
 }
 
-export interface DbSkillOfUserId {
+export interface SkillOfUserId {
     userId: number,
     skillId: number
 }

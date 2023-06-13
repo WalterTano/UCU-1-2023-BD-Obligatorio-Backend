@@ -10,6 +10,7 @@ export const getSkills: RequestHandler = toRequestHandler(
     }
 );
 
+// TODO: Replace multi-query mechanisms with join views
 export const getSkillsByUser: RequestHandler<{ userId: string }> = toRequestHandler(
     async (req) => {
         const userId = parseInt(req.params.userId);
@@ -96,7 +97,7 @@ export const putSkill: RequestHandler<{ userId: string, skillId: string }> = toR
             return { success: false, errorMessage: `Invalid description` };
         }
 
-        const res = await updateSkillOfUser({ci: userId, id_hab: skillId}, descripcion || null);
+        const res = await updateSkillOfUser({userId, skillId}, descripcion || null);
         return res;
     }
 );
@@ -113,7 +114,7 @@ export const deleteSkill: RequestHandler<{ userId: string, skillId: string }> = 
             return { success: false, errorMessage: "Invalid skill id" };
         }
 
-        const res = deleteSkillOfUser({ci: userId, id_hab: skillId});
+        const res = deleteSkillOfUser({userId, skillId});
         return res;
     }
 );

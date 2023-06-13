@@ -8,6 +8,7 @@ import cors from 'cors';
 import morgan from 'morgan';
 import { usersRouter } from './routes/users.routes';
 import { skillsRouter } from './routes/skill.routes';
+import { necessityRouter } from './routes/necessities.routes';
 
 const BASE_ROUTE = "/api/v1";
 const PORT = throwIfUndef(process.env.PORT, "PORT");
@@ -28,5 +29,6 @@ app.use(morgan('combined'));
 app.use(BASE_ROUTE, authRouter);
 app.use(BASE_ROUTE, usersRouter);
 app.use(BASE_ROUTE, skillsRouter);
+app.use(BASE_ROUTE, necessityRouter);
 
 app.listen(PORT, () => console.log(`listening on port ${PORT}`));
