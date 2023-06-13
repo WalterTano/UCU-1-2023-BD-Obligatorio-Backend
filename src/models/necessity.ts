@@ -2,7 +2,7 @@ import dbConn from "../configs/db.config"
 import { SelectQuery } from "../db/interfaces/selectQuery";
 import { mapResult, unwrapResult } from "../helpers/resultHelpers";
 import { DbNecessity, Necessity, necessityFromDb } from "../interfaces/necessity"
-import { DbNecessityId } from "../interfaces/necessityId";
+import { DbNecessityId, NecessityId, necessityIdFromDb } from "../interfaces/necessityId";
 import { NecessityTemplate, necessityTemplateToDb } from "../interfaces/necessityTemplate";
 import { Result } from "../types/result";
 
@@ -46,8 +46,8 @@ export async function getNecessityById(userId: number, necId: number): Promise<N
     return rawSingle && necessityFromDb(rawSingle);
 }
 
-export async function insertNecessity(template: NecessityTemplate): Promise<Result<void>> {
-    const dbTemp = necessityTemplateToDb(template);
+export async function insertNecessity(template: NecessityTemplate, userId: number): Promise<Result<NecessityId>> {
+    const dbTemp = necessityTemplateToDb(template, userId);
 
     const sqlRes = await dbConn.insert({
         table: "necesidad",
@@ -57,5 +57,6 @@ export async function insertNecessity(template: NecessityTemplate): Promise<Resu
 
     return mapResult(sqlRes, data0 => {
         const data: DbNecessityId = data0;
+        return necessityIdFromDb(data);
     });
 }

@@ -13,7 +13,6 @@ export interface DbNecessityTemplate {
 
 export interface NecessityTemplate {
     necId: number,
-    userId: number,
     description: string,
     state: string,
     latitude: number,
@@ -24,10 +23,10 @@ export interface NecessityTemplate {
     title: string
 }
 
-export function necessityTemplateToDb(info: NecessityTemplate): DbNecessityTemplate {
+export function necessityTemplateToDb(info: NecessityTemplate, userId: number): DbNecessityTemplate {
     return {
         id: info.necId,
-        ci_creador: info.userId,
+        ci_creador: userId,
         descripcion: info.description,
         estado: info.state,
         lat_ubicacion: info.latitude,
