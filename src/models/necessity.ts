@@ -1,6 +1,10 @@
-import dbConn from "../configs/db.config"
-import { unwrapResult } from "../helpers/resultHelpers";
+import dbConn from "../configs/db.config";
 import { DbNecessity, Necessity, necessityFromDb } from "../interfaces/necessity"
+import { SelectQuery } from "../db/interfaces/selectQuery";
+import { mapResult, unwrapResult } from "../helpers/resultHelpers";
+import { DbNecessityId, NecessityId, necessityIdFromDb } from "../interfaces/necessityId";
+import { NecessityTemplate, necessityTemplateToDb } from "../interfaces/necessityTemplate";
+import { Result } from "../types/result";
 
 // TODO: create endpoint for all necessities
 // TODO: add filters feature for endpoint for all necessities
@@ -27,4 +31,47 @@ export async function getNecessityById(id: number): Promise<Necessity | undefine
     const res: DbNecessity | undefined = unwrapResult(sqlRes).at(0);
 
     return res && necessityFromDb(res);
+}
+
+// TODO: create endpoint for all necesities
+// TODO: create endpoint for all necesities with filters
+
+// TODO: do the same for other models
+async function selectAllFromNecessities(query: Omit<SelectQuery, "table" | "columns">): Promise<DbNecessity[]> {
+    const sqlRes = await dbConn.select({
+        columns: [
+            "id", "ci_creador", "descripcion", "estado", "lat_ubicacion",
+            "long_ubicacion", "fecha_inicio", "fecha_fin", "fecha_solucionada", "titulo"
+        ],
+        table: "necesidad",
+        ...query
+    });
+
+    const res: DbNecessity[] = unwrapResult(sqlRes);
+    return res;
+}
+
+export async function getNecessitiesByUser(userId: number): Promise<Necessity[]> {
+    const raw = await selectAllFromNecessities({
+        conditions: [
+            { column: "ci_creador", operation: "=", value: userId }
+        ]
+    });
+
+    return raw.map(necessityFromDb);
+}
+
+export async function insertNecessity(template: NecessityTemplate): Promise<Result<NecessityId>> {
+    const dbTemp = necessityTemplateToDb(template);
+
+    const sqlRes = await dbConn.insert({
+        table: "necesidad",
+        idColumns: ["id", "ci_creador"],
+        values: dbTemp
+    });
+
+    return mapResult(sqlRes, data0 => {
+        const data: DbNecessityId = data0;
+        return necessityIdFromDb(data);
+    });
 }
