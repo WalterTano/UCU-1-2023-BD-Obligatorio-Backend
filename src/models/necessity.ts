@@ -63,8 +63,6 @@ export async function getNecessitiesByUser(userId: number): Promise<Necessity[]>
 export async function insertNecessity(template: NecessityTemplate): Promise<Result<number>> {
     const dbTemp = necessityTemplateToDb(template);
 
-    console.log("1:", dbTemp);
-
     const sqlRes = await dbConn.insert({
         table: "necesidad",
         idColumns: ["id"],
@@ -74,5 +72,17 @@ export async function insertNecessity(template: NecessityTemplate): Promise<Resu
     return mapResult(sqlRes, data0 => {
         const data: { id: number } = data0;
         return data.id;
+    });
+}
+
+export async function updateNecessity(id: number, template: NecessityTemplate): Promise<Result<number | undefined>> {
+    const dbTemp = necessityTemplateToDb(template);
+
+    return await dbConn.update({
+        table: "necesidad",
+        values: dbTemp,
+        conditions: [
+            { column: "id", operation: "=", value: id }
+        ]
     });
 }
