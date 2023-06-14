@@ -1,10 +1,15 @@
+import { LocalGeolocation } from "./localGeoLocation";
+
 export interface DbNecessityTemplate {
-    id: number,
     ci_creador: number,
     descripcion: string,
     estado: string,
-    lat_ubicacion: number,
-    long_ubicacion: number,
+    lat_ubicacion: number | null,
+    long_ubicacion: number | null,
+    pais: string,
+    departamento: string,
+    ciudad: string,
+    direccion: string,
     fecha_inicio: Date,
     fecha_fin: Date | null,
     fecha_solucionada: Date | null,
@@ -12,26 +17,27 @@ export interface DbNecessityTemplate {
 }
 
 export interface NecessityTemplate {
-    id: number,
     userId: number,
     description: string,
     state: string,
-    latitude: number,
-    longitude: number,
     startDate: Date,
     endDate?: Date | null,
     solvedDate?: Date | null,
-    title: string
+    title: string,
+    location: LocalGeolocation
 }
 
 export function necessityTemplateToDb(info: NecessityTemplate): DbNecessityTemplate {
     return {
-        id: info.id,
         ci_creador: info.userId,
         descripcion: info.description,
         estado: info.state,
-        lat_ubicacion: info.latitude,
-        long_ubicacion: info.longitude,
+        lat_ubicacion: info.location.latitude || null,
+        long_ubicacion: info.location.longitude || null,
+        pais: info.location.country,
+        departamento: info.location.province,
+        ciudad: info.location.city,
+        direccion: info.location.streetAddress,
         fecha_inicio: info.startDate,
         fecha_fin: info.endDate || null,
         fecha_solucionada: info.solvedDate || null,

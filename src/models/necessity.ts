@@ -2,7 +2,6 @@ import dbConn from "../configs/db.config";
 import { DbNecessity, Necessity, necessityFromDb } from "../interfaces/necessity"
 import { SelectQuery } from "../db/interfaces/selectQuery";
 import { mapResult, unwrapResult } from "../helpers/resultHelpers";
-import { DbNecessityId, NecessityId, necessityIdFromDb } from "../interfaces/necessityId";
 import { NecessityTemplate, necessityTemplateToDb } from "../interfaces/necessityTemplate";
 import { Result } from "../types/result";
 
@@ -61,17 +60,19 @@ export async function getNecessitiesByUser(userId: number): Promise<Necessity[]>
     return raw.map(necessityFromDb);
 }
 
-export async function insertNecessity(template: NecessityTemplate): Promise<Result<NecessityId>> {
+export async function insertNecessity(template: NecessityTemplate): Promise<Result<number>> {
     const dbTemp = necessityTemplateToDb(template);
+
+    console.log("1:", dbTemp);
 
     const sqlRes = await dbConn.insert({
         table: "necesidad",
-        idColumns: ["id", "ci_creador"],
+        idColumns: ["id"],
         values: dbTemp
     });
 
     return mapResult(sqlRes, data0 => {
-        const data: DbNecessityId = data0;
-        return necessityIdFromDb(data);
+        const data: { id: number } = data0;
+        return data.id;
     });
 }
