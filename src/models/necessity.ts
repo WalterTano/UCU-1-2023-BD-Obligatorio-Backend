@@ -1,44 +1,30 @@
 import dbConn from "../configs/db.config"
-import { SelectQuery } from "../db/interfaces/selectQuery";
 import { unwrapResult } from "../helpers/resultHelpers";
 import { DbNecessity, Necessity, necessityFromDb } from "../interfaces/necessity"
 
-// TODO: create endpoint for all necesities
-// TODO: create endpoint for all necesities with filters
+// TODO: create endpoint for all necessities
+// TODO: add filters feature for endpoint for all necessities
 
-// TODO: do the same for other models
-async function selectAllFromNecessities(query: Omit<SelectQuery, "table" | "columns">): Promise<DbNecessity[]> {
+
+export async function getNecessities(): Promise<Necessity[]> {
     const sqlRes = await dbConn.select({
-        columns: [
-            "id", "ci_creador", "descripcion", "estado", "lat_ubicacion",
-            "long_ubicacion", "fecha_inicio", "fecha_fin", "fecha_solucionada", "titulo"
-        ],
         table: "necesidad",
-        ...query
     });
 
     const res: DbNecessity[] = unwrapResult(sqlRes);
-    return res;
+
+    return res.map(necessityFromDb);
 }
 
-export async function getNecessitiesByUser(userId: number): Promise<Necessity[]> {
-    const raw = await selectAllFromNecessities({
+export async function getNecessityById(id: number): Promise<Necessity | undefined> {
+    const sqlRes = await dbConn.select({
+        table: "necesidad",
         conditions: [
-            { column: "ci_creador", operation: "=", value: userId }
+            { column: "id", operation: "=", value: id }
         ]
     });
 
-    return raw.map(necessityFromDb);
-}
+    const res: DbNecessity | undefined = unwrapResult(sqlRes).at(0);
 
-export async function getNecessityById(userId: number, necId: number): Promise<Necessity | undefined> {
-    const raw = await selectAllFromNecessities({
-        conditions: [
-            { column: "ci_creador", operation: "=", value: userId },
-            { column: "id", operation: "=", value: necId }
-        ]
-    });
-
-    const rawSingle = raw.at(0);
-    return rawSingle && necessityFromDb(rawSingle);
+    return res && necessityFromDb(res);
 }

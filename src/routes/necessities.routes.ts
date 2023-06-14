@@ -1,17 +1,17 @@
 import { RequestHandler, Router } from "express";
-import { deleteNecessity, getNecessitiesByUser, getNecessity, postNecessity, putNecessity } from "../controllers/necessities.controller";
+import { deleteNecessity, getNecessities, getNecessity, postNecessity, putNecessity } from "../controllers/necessities.controller";
 
 const router = Router();
-const BASE_ROUTE = '/users/:userId/necessities';
+const BASE_ROUTE = '/necessities';
 
-router.get(BASE_ROUTE, getNecessitiesByUser);
+router.get(BASE_ROUTE, getNecessities);
 
-router.get(`${BASE_ROUTE}/:necId`, getNecessity);
+router.get(`${BASE_ROUTE}/:id`, getNecessity);
 
 router.post(BASE_ROUTE, postNecessity);
 
-router.put(`${BASE_ROUTE}/:necId`, putNecessity);
+router.put(`${BASE_ROUTE}/:id`, putNecessity);
 
-router.delete(`${BASE_ROUTE}/:necId`, deleteNecessity);
+router.delete(`${BASE_ROUTE}/:id`, deleteNecessity);
 
 export const necessityRouter: RequestHandler<{userId: string}> = router;
