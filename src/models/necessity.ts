@@ -86,3 +86,14 @@ export async function updateNecessity(id: number, template: NecessityTemplate): 
         ]
     });
 }
+
+export async function deleteNecessity(id: number): Promise<Result<boolean>> {
+    const res = await dbConn.delete({
+        table: "necesidad",
+        conditions: [
+            { column: "id", operation: "=", value: id }
+        ]
+    });
+
+    return mapResult(res, data => data > 0);
+}

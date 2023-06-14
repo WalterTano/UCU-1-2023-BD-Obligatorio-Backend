@@ -1,12 +1,16 @@
 import { RequestHandler } from "express";
 import { toRequestHandler } from "../helpers/controllers.helpers";
-import { getNecessities as modelGetNecessities, getNecessityById as modelGetNecessityById, updateNecessity } from "../models/necessity";
+import { getNecessities as modelGetNecessities, getNecessityById as modelGetNecessityById, updateNecessity, deleteNecessity as modelDeleteNecessity } from "../models/necessity";
 import { insertNecessity } from "../models/necessity";
 
-// TODO: in all update controllers, modify return logic:
+// TODO: in all update controllers, modify return format logic:
 //  If resource not found: { success: false, errorMessage: "Resource not found" }
 //  If template is empty: { success: true, data: false }
 //  If update is success: { success: true, data: true }
+
+// TODO: in all delete controllers: modify return format logic:
+// If resource is deleted: { success: true, data: void 0 }
+// If resource is not found: { success: false, errorMessage: "Resource not found" }
 
 export const getNecessities: RequestHandler = toRequestHandler(
     async (_req) => {
@@ -53,6 +57,14 @@ export const putNecessity: RequestHandler<{ id: string }> = toRequestHandler(
     }
 );
 
-export const deleteNecessity: RequestHandler<{ id: string }> = async (req, res) => {
-    res.status(500).send("Not implemented yet");
-};
+export const deleteNecessity: RequestHandler<{ id: string }> = toRequestHandler(
+    async (req) => {
+        const id = parseInt(req.params.id);
+        if (isNaN(id)) {
+            return { success: false, errorMessage: "Invalid id" };
+        }
+
+        const result = await modelDeleteNecessity(id);
+        return result;
+    }
+);

@@ -62,6 +62,7 @@ export async function updateUser(ci: number, user: Omit<Partial<User>, "id">): P
     });
 }
 
+// TODO minor: Change return logic to mapResult
 export async function deleteUser(ci: number): Promise<Result<boolean>> {
     const res = await dbConn.delete({
         table: "usuario",

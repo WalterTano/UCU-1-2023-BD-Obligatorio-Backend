@@ -68,7 +68,7 @@ export const postSkill: RequestHandler<{ userId: string }> = toRequestHandler(
         }
 
         const { descripcion, habilidad } = req.body;
-        if (typeof descripcion != "string" && typeof descripcion != "undefined") {
+        if (typeof descripcion != "string" && descripcion !== null) {
             return { success: false, errorMessage: "Invalid description" };
         }
         if (typeof habilidad != "string" && typeof habilidad != "number") {

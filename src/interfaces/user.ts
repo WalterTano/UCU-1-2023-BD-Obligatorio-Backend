@@ -36,8 +36,8 @@ export function localGeolocationFromDb(info: Pick<DbUser, "pais" | "departamento
         city: info.ciudad,
         province: info.departamento,
         streetAddress: info.direccion,
-        latitude: info.latitud || undefined,
-        longitude: info.longitud || undefined
+        latitude: info.latitud,
+        longitude: info.longitud
     };
 }
 

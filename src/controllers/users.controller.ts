@@ -2,6 +2,8 @@ import { RequestHandler } from "express";
 import { findByCI, getUsers as getUsersModel, updateUser, deleteUser as deleteUserModel, newUser } from "../models/user";
 import { toRequestHandler } from "../helpers/controllers.helpers";
 
+// TODO minor: change name of imports' alias from ...Model to model...
+
 export const getUsers: RequestHandler = toRequestHandler(async () => {
     const users = await getUsersModel();
     return { success: true, data: users };
