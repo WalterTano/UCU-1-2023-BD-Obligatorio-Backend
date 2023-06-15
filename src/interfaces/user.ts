@@ -2,116 +2,73 @@ import { GeoConfig } from "./geoConfig";
 import { LocalGeolocation } from "./localGeoLocation";
 
 export const dbUserColumns: (keyof DbUser)[] = [
-    "ci", "nombre", "geo_dist", "geo_estado", "is_admin",
-    "pais", "departamento", "ciudad", "direccion", "latitud", "longitud"
+    "ci", "nombre", "apellido", "email", "geo_distancia",
+    "geo_activado", "es_admin", "latitud", "longitud"
 ];
 
+/*
+	ci int PRIMARY KEY,
+	nombre varchar(50) NOT NULL,
+	apellido varchar(50) NOT NULL,
+	hashpwd varchar(64) NOT NULL,
+	email varchar(40) NOT NULL,
+	geo_distancia integer NOT NULL DEFAULT 0,
+	geo_activado boolean NOT NULL DEFAULT false,
+	es_admin boolean NOT NULL DEFAULT false,
+	latitud int NOT NULL,
+	longitud int NOT NULL
+    */
+
 export interface DbUser {
-    readonly ci: number,
+    ci: number,
     nombre: string,
+    apellido: string,
     email: string,
-    geo_dist: number,
-    geo_estado: boolean,
-    is_admin: boolean,
-    pais: string,
-    departamento: string,
-    ciudad: string,
-    direccion: string,
-    latitud: number | null,
-    longitud: number | null
+    geo_distancia: number,
+    geo_activado: boolean,
+    es_admin: boolean,
+    latitud: number,
+    longitud: number
 }
 
 export interface User {
     id: number,
-    name: string,
+    firstName: string,
+    lastName: string,
     email: string,
     isAdmin: boolean,
     address: LocalGeolocation,
     geoConfig: GeoConfig
 }
 
-export function localGeolocationFromDb(info: Pick<DbUser, "pais" | "departamento" | "ciudad" | "direccion" | "latitud" | "longitud">): LocalGeolocation {
-    return {
-        country: info.pais,
-        city: info.ciudad,
-        province: info.departamento,
-        streetAddress: info.direccion,
-        latitude: info.latitud,
-        longitude: info.longitud
-    };
-}
-
-export function geoConfigFromDb(info: Pick<DbUser, "geo_dist" | "geo_estado">): GeoConfig {
-    return {
-        active: info.geo_estado,
-        maxDistance: info.geo_dist
-    };
-}
-
 export function userFromDb(info: DbUser): User {
     return {
         id: info.ci,
-        name: info.nombre,
+        firstName: info.nombre,
+        lastName: info.apellido,
         email: info.email,
-        isAdmin: info.is_admin,
-        address: localGeolocationFromDb(info),
-        geoConfig: geoConfigFromDb(info)
-    };
-}
-
-export function localGeolocationToDb(info: LocalGeolocation): Pick<DbUser, "pais" | "departamento" | "ciudad" | "direccion" | "latitud" | "longitud"> {
-    return {
-        pais: info.country,
-        departamento: info.province,
-        ciudad: info.city,
-        direccion: info.streetAddress,
-        latitud: info.latitude || null,
-        longitud: info.longitude || null
-    };
-}
-
-export function partialLocalGeolocationToDb(info?: Partial<LocalGeolocation>): Partial<Pick<DbUser, "pais" | "departamento" | "ciudad" | "direccion" | "latitud" | "longitud">> {
-    return {
-        pais: info?.country,
-        departamento: info?.province,
-        ciudad: info?.city,
-        direccion: info?.streetAddress,
-        latitud: info?.latitude,
-        longitud: info?.longitude
-    };
-}
-
-export function geoConfigToDb(info: GeoConfig): Pick<DbUser, "geo_dist" | "geo_estado"> {
-    return {
-        geo_estado: info.active,
-        geo_dist: info.maxDistance
-    };
-}
-
-export function partialGeoConfigToDb(info?: Partial<GeoConfig>): Partial<Pick<DbUser, "geo_dist" | "geo_estado">> {
-    return {
-        geo_estado: info?.active,
-        geo_dist: info?.maxDistance
+        isAdmin: info.es_admin,
+        address: {
+            latitude: info.latitud,
+            longitude: info.longitud
+        },
+        geoConfig: {
+            active: info.geo_activado,
+            maxDistance: info.geo_distancia
+        }
     };
 }
 
 export function userToDb(info: User): DbUser {
     return {
         ci: info.id,
-        nombre: info.name,
+        nombre: info.firstName,
+        apellido: info.lastName,
         email: info.email,
-        is_admin: info.isAdmin,
-        ...localGeolocationToDb(info.address),
-        ...geoConfigToDb(info.geoConfig)
-    };
-}
-
-export function partialUserToDb(info: Omit<Partial<User>, "id">): Partial<DbUser> {
-    return {
-        nombre: info.name,
-        email: info.email,
-        is_admin: info.isAdmin,
-        ...partialLocalGeolocationToDb(info.address),
-        ...partialGeoConfigToDb(info.geoConfig)
-    };
+        es_admin: info.isAdmin,
+        latitud: info.address.latitude,
+        longitud: info.address.longitude,
+        geo_activado: info.geoConfig.active,
+        geo_distancia: info.geoConfig.maxDistance
+    }
 }

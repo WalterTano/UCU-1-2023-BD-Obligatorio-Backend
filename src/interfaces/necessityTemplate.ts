@@ -11,15 +11,11 @@ export function necessityTemplateToDb(info: NecessityTemplate): DbNecessityTempl
         ci_creador: info.userId,
         descripcion: info.description,
         estado: info.status,
-        lat_ubicacion: info.location.latitude,
-        long_ubicacion: info.location.longitude,
-        pais: info.location.country,
-        departamento: info.location.province,
-        ciudad: info.location.city,
-        direccion: info.location.streetAddress,
+        latitud: info.location.latitude,
+        longitud: info.location.longitude,
         fecha_inicio: info.startDate,
         fecha_fin: info.endDate,
         fecha_solucionada: info.solvedDate,
-        titulo: info.title
+        titulo: info.title,
     };
 }

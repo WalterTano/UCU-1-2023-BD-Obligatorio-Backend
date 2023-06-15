@@ -3,19 +3,15 @@ import { LocalGeolocation } from "./localGeoLocation";
 export interface DbNecessity {
     id: number,
     ci_creador: number,
+    titulo: string,
     descripcion: string,
     estado: string,
-    lat_ubicacion: number | null,
-    long_ubicacion: number | null,
-    pais: string,
-    departamento: string,
-    ciudad: string,
-    direccion: string,
     fecha_creacion: Date,
+    latitud: number,
+    longitud: number,
     fecha_inicio: Date,
     fecha_fin: Date | null,
     fecha_solucionada: Date | null,
-    titulo: string
 }
 
 export interface Necessity {
@@ -43,12 +39,8 @@ export function necessityFromDb(info: DbNecessity): Necessity {
         endDate: info.fecha_fin,
         solvedDate: info.fecha_solucionada,
         location: {
-            latitude: info.lat_ubicacion,
-            longitude: info.long_ubicacion,
-            country: info.pais,
-            province: info.departamento,
-            city: info.ciudad,
-            streetAddress: info.direccion
+            latitude: info.latitud,
+            longitude: info.longitud,
         }
     };
 }
@@ -57,18 +49,14 @@ export function necessityToDb(info: Necessity): DbNecessity {
     return {
         id: info.id,
         ci_creador: info.userId,
+        titulo: info.title,
         descripcion: info.description,
         estado: info.status,
-        lat_ubicacion: info.location.latitude || null,
-        long_ubicacion: info.location.longitude || null,
-        pais: info.location.country,
-        departamento: info.location.province,
-        ciudad: info.location.city,
-        direccion: info.location.streetAddress,
         fecha_creacion: info.createdDate,
+        latitud: info.location.latitude,
+        longitud: info.location.longitude,
         fecha_inicio: info.startDate,
         fecha_fin: info.endDate,
         fecha_solucionada: info.solvedDate,
-        titulo: info.title
     };
 }

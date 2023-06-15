@@ -1,9 +1,9 @@
 export interface SkillOfUserTemplate {
-    skillId: number | string,
+    skillName: string,
     description: string | null
 }
 
 export interface DbSkillToUserTemplate {
-    id_hab: number,
+    nombre_habilidad: number,
     descripcion: string | null
 }

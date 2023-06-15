@@ -1,25 +1,24 @@
 import { encrypt } from "../helpers/crypt";
 import { GeoConfig } from "./geoConfig";
 import { LocalGeolocation } from "./localGeoLocation";
-import { geoConfigToDb, localGeolocationToDb } from "./user";
 
 export interface DbUserTemplate {
-    readonly ci: number,
+    ci: number,
     nombre: string,
+    apellido: string,
     email: string,
-    geo_dist?: number,
-    geo_estado?: boolean,
-    is_admin?: boolean,
-    pais: string,
-    departamento: string,
-    ciudad: string,
-    direccion: string,
+    geo_distancia: number,
+    geo_activado: boolean,
+    es_admin: boolean,
+    latitud: number,
+    longitud: number,
     hashpwd: string
 }
 
 export interface UserTemplate {
     id: number,
-    name: string,
+    firstName: string,
+    lastName: string,
     email: string,
     isAdmin: boolean | null,
     address: LocalGeolocation,
@@ -30,11 +29,14 @@ export interface UserTemplate {
 export async function userTemplateToDb(info: UserTemplate): Promise<DbUserTemplate> {
     return {
         ci: info.id,
-        nombre: info.name,
+        nombre: info.firstName,
+        apellido: info.lastName,
         email: info.email,
-        is_admin: info.isAdmin || false,
-        ...(info.geoConfig ? geoConfigToDb(info.geoConfig) : {}),
-        ...localGeolocationToDb(info.address),
-        hashpwd: await encrypt(info.password)
+        es_admin: info.isAdmin || false,
+        geo_activado: info.geoConfig?.active || false,
+        geo_distancia: info.geoConfig?.maxDistance || 0,
+        hashpwd: await encrypt(info.password),
+        latitud: info.address.latitude,
+        longitud: info.address.longitude
     };
 }

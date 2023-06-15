@@ -90,11 +90,7 @@ async function getIdOfSkill(name: string): Promise<number | undefined> {
 
 // TODO: Change return type to Promise<Result<SkillOfUserId>>
 export async function newSkillOfUser(ci: number, info: SkillOfUserTemplate): Promise<Result<SkillOfUserId>> {
-    const hab = info.skillId;
-    const habId = typeof hab === "number" ? hab : await getIdOfSkill(hab);
-    if (habId == undefined) {
-        return { success: false, errorMessage: "Unknown skill" };
-    }
+    const hab = info.skillName;
 
     const sqlRes = await dbConn.insert({
         idColumns: ["id_hab", "ci"],
