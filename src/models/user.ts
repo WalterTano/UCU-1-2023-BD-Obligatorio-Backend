@@ -1,8 +1,8 @@
-import { DbUser, User, dbUserColumns, partialUserToDb, userFromDb } from '../interfaces/user';
+import { DbUser, User, dbUserColumns, userFromDb, userToDb } from '../interfaces/user';
 import dbConn from "../configs/db.config";
 import { UserTemplate, userTemplateToDb } from '../interfaces/userTemplate';
 import { Result } from '../types/result';
-import { unwrapResult } from '../helpers/resultHelpers';
+import { mapResult, unwrapResult } from '../helpers/resultHelpers';
 
 export async function getUsers(): Promise<User[]> {
     const sqlRes = await dbConn.select({
@@ -45,23 +45,27 @@ export async function newUser(user: UserTemplate): Promise<Result<number>> {
         values: dbUser
     });
 
-    return result;
+    return mapResult(result, data => data.ci);
 }
 
 // It's not the same that an object has no attribute,
 // or that it has that attribute with the value 'undefined'
-export async function updateUser(ci: number, user: Omit<Partial<User>, "id">): Promise<Result<number | undefined>> {
-    const dbUser = partialUserToDb(user);
+export async function updateUser(ci: number, user: Omit<User, "id">): Promise<Result<number | undefined>> {
+    const dbUser = userToDb({ ...user, id: 0 });
+
+    const dbInput: Partial<DbUser> = { ...dbUser };
+    delete dbInput.ci;
 
     return await dbConn.update({
         table: "usuario",
         values: dbUser,
         conditions: [
-            {column: "ci", operation: "=", value: ci}
+            { column: "ci", operation: "=", value: ci }
         ]
     });
 }
 
+// TODO minor: Change return logic to mapResult
 export async function deleteUser(ci: number): Promise<Result<boolean>> {
     const res = await dbConn.delete({
         table: "usuario",

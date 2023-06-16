@@ -5,7 +5,9 @@
   "main": "src-JS/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "tsc && node ."
+    "start": "tsc && node .",
+    "build": "tsc",
+    "exec": "node ."
   },
   "repository": {
     "type": "git",

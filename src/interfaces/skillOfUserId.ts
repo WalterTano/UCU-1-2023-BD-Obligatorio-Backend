@@ -1,9 +1,9 @@
 export interface SkillOfUserId {
-    id_hab: number,
-    ci: number
-}
+    skillName: string,
+    userId: number,
+};
 
 export interface DbSkillOfUserId {
-    userId: number,
-    skillId: number
+    nombre_habilidad: string,
+    ci: number
 }
