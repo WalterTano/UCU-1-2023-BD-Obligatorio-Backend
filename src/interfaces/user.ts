@@ -6,19 +6,6 @@ export const dbUserColumns: (keyof DbUser)[] = [
     "geo_activado", "es_admin", "latitud", "longitud"
 ];
 
-/*
-	ci int PRIMARY KEY,
-	nombre varchar(50) NOT NULL,
-	apellido varchar(50) NOT NULL,
-	hashpwd varchar(64) NOT NULL,
-	email varchar(40) NOT NULL,
-	geo_distancia integer NOT NULL DEFAULT 0,
-	geo_activado boolean NOT NULL DEFAULT false,
-	es_admin boolean NOT NULL DEFAULT false,
-	latitud int NOT NULL,
-	longitud int NOT NULL
-    */
-
 export interface DbUser {
     ci: number,
     nombre: string,
