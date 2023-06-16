@@ -2,8 +2,9 @@ import dbConn from "../configs/db.config";
 import { DbNecessity, Necessity, necessityFromDb } from "../interfaces/necessity"
 import { SelectQuery } from "../db/interfaces/selectQuery";
 import { mapResult, unwrapResult } from "../helpers/resultHelpers";
-import { NecessityTemplate, necessityTemplateToDb } from "../interfaces/necessityTemplate";
+import { DbNecessityTemplate, NecessityTemplate, necessityTemplateToDb } from "../interfaces/necessityTemplate";
 import { Result } from "../types/result";
+import { Condition } from "../db/interfaces/condition";
 
 // TODO: create endpoint for all necessities
 // TODO: add filters feature for endpoint for all necessities
@@ -32,15 +33,12 @@ export async function getNecessityById(id: number): Promise<Necessity | undefine
     return res && necessityFromDb(res);
 }
 
-// TODO: create endpoint for all necesities
-// TODO: create endpoint for all necesities with filters
-
 // TODO: do the same for other models
 async function selectAllFromNecessities(query: Omit<SelectQuery, "table" | "columns">): Promise<DbNecessity[]> {
     const sqlRes = await dbConn.select({
         columns: [
-            "id", "ci_creador", "descripcion", "estado", "lat_ubicacion",
-            "long_ubicacion", "fecha_inicio", "fecha_fin", "fecha_solucionada", "titulo"
+            "id", "ci_creador", "titulo", "descripcion", "estado", "fecha_creacion",
+            "latitud", "longitud", "fecha_inicio", "fecha_fin", "fecha_solucionada"
         ],
         table: "necesidad",
         ...query
@@ -75,12 +73,16 @@ export async function insertNecessity(template: NecessityTemplate): Promise<Resu
     });
 }
 
-export async function updateNecessity(id: number, template: NecessityTemplate): Promise<Result<number | undefined>> {
-    const dbTemp = necessityTemplateToDb(template);
+export async function updateNecessity(id: number, template: Omit<NecessityTemplate, "userId">): Promise<Result<number | undefined>> {
+    const dbTemp = necessityTemplateToDb({ ...template, userId: 0 });
 
+    const dbInput: Partial<DbNecessityTemplate> = { ...dbTemp };
+    delete dbInput.ci_creador;
+
+    console.log("1:", dbInput);
     return await dbConn.update({
         table: "necesidad",
-        values: dbTemp,
+        values: dbInput,
         conditions: [
             { column: "id", operation: "=", value: id }
         ]

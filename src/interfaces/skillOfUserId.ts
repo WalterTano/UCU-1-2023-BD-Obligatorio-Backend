@@ -1,5 +1,5 @@
 export interface SkillOfUserId {
-    skillId: string,
+    skillName: string,
     userId: number,
 };
 

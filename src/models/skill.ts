@@ -1,25 +1,24 @@
 import dbConn from "../configs/db.config";
 import { mapResult, unwrapResult } from "../helpers/resultHelpers";
-import { DbSkill, Skill, skillFromDb } from "../interfaces/skill";
 import { DbSkillOfUser, SkillOfUser, skillOfUserFromDb } from "../interfaces/skillOfUser";
-import { DbSkillOfUserId, SkillOfUserId } from "../interfaces/skillOfUserId";
-import { SkillOfUserTemplate } from "../interfaces/skillOfUserTemplate";
+import { SkillOfUserId } from "../interfaces/skillOfUserId";
+import { SkillOfUserTemplate, skillOfUserTemplateToDb } from "../interfaces/skillOfUserTemplate";
 import { Result } from "../types/result";
 
-export async function getAllSkills(): Promise<Skill[]> {
+export async function getAllSkills(): Promise<string[]> {
     const sqlRes = await dbConn.select({
-        columns: ["id", "nombre"],
+        columns: ["nombre"],
         table: "habilidad"
     });
 
-    const res: DbSkill[] = unwrapResult(sqlRes);
+    const res: {nombre: string}[] = unwrapResult(sqlRes);
 
-    return res.map(skillFromDb);
+    return res.map(v => v.nombre);
 }
 
 export async function getSkillsOfUser(ci: number): Promise<SkillOfUser[]> {
     const sqlRes = await dbConn.select({
-        columns: ["id_hab", "fecha_creacion", "descripcion"],
+        columns: ["nombre_habilidad", "fecha_creacion", "descripcion"],
         table: "usuario_tiene_habilidad",
         conditions: [
             { column: "ci", operation: "=", value: ci }
@@ -31,13 +30,13 @@ export async function getSkillsOfUser(ci: number): Promise<SkillOfUser[]> {
     return res.map(skillOfUserFromDb);
 }
 
-export async function getSkillOfUser(ci: number, skillId: number): Promise<SkillOfUser | undefined> {
+export async function getSkillOfUser(ci: number, skillId: string): Promise<SkillOfUser | undefined> {
     const sqlRes = await dbConn.select({
-        columns: ["id_hab", "fecha_creacion", "descripcion"],
+        columns: ["nombre_habilidad", "fecha_creacion", "descripcion"],
         table: "usuario_tiene_habilidad",
         conditions: [
             { column: "ci", operation: "=", value: ci },
-            { column: "id_hab", operation: "=", value: skillId }
+            { column: "nombre_habilidad", operation: "=", value: skillId }
         ]
     });
 
@@ -46,66 +45,18 @@ export async function getSkillOfUser(ci: number, skillId: number): Promise<Skill
     return res && skillOfUserFromDb(res);
 }
 
-export async function getSkillsById(skillIds: number[]): Promise<Skill[]> {
-    const sqlRes = await dbConn.select({
-        columns: ["id", "nombre"],
-        table: "habilidad",
-        conditions: [
-            { column: "id", operation: "IN", value: skillIds }
-        ]
-    });
-
-    const res: DbSkill[] = unwrapResult(sqlRes);
-
-    return res.map(skillFromDb);
-}
-
-export async function getSkillById(skillId: number): Promise<Skill | undefined> {
-    const sqlRes = await dbConn.select({
-        columns: ["id", "nombre"],
-        table: "habilidad",
-        conditions: [
-            { column: "id", operation: "=", value: skillId }
-        ]
-    });
-
-    const res: DbSkill | undefined = unwrapResult(sqlRes).at(0);
-
-    return res && skillFromDb(res);
-}
-
-async function getIdOfSkill(name: string): Promise<number | undefined> {
-    const sqlRes = await dbConn.select({
-        columns: ["id"],
-        table: "habilidad",
-        conditions: [
-            { column: "nombre", operation: "=", value: name }
-        ]
-    });
-
-    const res: {id: number} | undefined = unwrapResult(sqlRes).at(0);
-
-    return res && res.id;
-}
-
 // TODO: Change return type to Promise<Result<SkillOfUserId>>
 export async function newSkillOfUser(ci: number, info: SkillOfUserTemplate): Promise<Result<SkillOfUserId>> {
-    const hab = info.skillName;
-
     const sqlRes = await dbConn.insert({
-        idColumns: ["id_hab", "ci"],
+        idColumns: ["nombre_habilidad", "ci"],
         table: "usuario_tiene_habilidad",
-        values: {
-            id_hab: habId,
-            ci: ci,
-            descripcion: info.description || null
-        }
+        values: skillOfUserTemplateToDb(ci, info)
     });
 
-    return mapResult(sqlRes, raw => {
-        const data: DbSkillOfUserId = raw;
-        return { userId: data.ci, skillId: data.id_hab };
-    });
+    return mapResult(sqlRes, () => ({
+        skillName: info.skillName,
+        userId: ci
+    }));
 }
 
 export async function deleteSkillOfUser(id: SkillOfUserId): Promise<Result<void>> {
@@ -113,7 +64,7 @@ export async function deleteSkillOfUser(id: SkillOfUserId): Promise<Result<void>
         table: "usuario_tiene_habilidad",
         conditions: [
             { column: "ci", operation: "=", value: id.userId },
-            { column: "id_hab", operation: "=", value: id.skillId }
+            { column: "nombre_habilidad", operation: "=", value: id.skillName }
         ]
     });
     return mapResult(sqlRes, _ => void 0);
@@ -127,7 +78,7 @@ export async function updateSkillOfUser(id: SkillOfUserId, newDescripcion: strin
         },
         conditions: [
             { column: "ci", operation: "=", value: id.userId },
-            { column: "id_hab", operation: "=", value: id.skillId }
+            { column: "nombre_habilidad", operation: "=", value: id.skillName }
         ]
     });
 }

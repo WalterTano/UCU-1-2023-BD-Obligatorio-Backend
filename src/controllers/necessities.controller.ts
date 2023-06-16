@@ -1,6 +1,6 @@
 import { RequestHandler } from "express";
 import { toRequestHandler } from "../helpers/controllers.helpers";
-import { getNecessities as modelGetNecessities, getNecessityById as modelGetNecessityById, updateNecessity, deleteNecessity as modelDeleteNecessity } from "../models/necessity";
+import { getNecessitiesByUser as modelGetNecessitiesByUser, getNecessities as modelGetNecessities, getNecessityById as modelGetNecessityById, updateNecessity, deleteNecessity as modelDeleteNecessity } from "../models/necessity";
 import { insertNecessity } from "../models/necessity";
 
 // TODO: in all update controllers, modify return format logic:
@@ -15,6 +15,18 @@ import { insertNecessity } from "../models/necessity";
 export const getNecessities: RequestHandler = toRequestHandler(
     async (_req) => {
         const res = await modelGetNecessities();
+        return { success: true, data: res };
+    }
+);
+
+export const getNecessitiesByUser: RequestHandler<{ userId: string }> = toRequestHandler(
+    async (req) => {
+        const userId = parseInt(req.params.userId);
+        if (isNaN(userId)) {
+            return { success: false, errorMessage: "Invalid user id" };
+        }
+
+        const res = await modelGetNecessitiesByUser(userId);
         return { success: true, data: res };
     }
 );

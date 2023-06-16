@@ -4,7 +4,7 @@ import { DbNecessity, Necessity } from "./necessity";
 // TODO: Change other templates' declaration to this format
 export type DbNecessityTemplate = Omit<DbNecessity, "id" | "fecha_creacion">;
 
-export type  NecessityTemplate = Omit<Necessity, "id" | "creationDate">;
+export type NecessityTemplate = Omit<Necessity, "id" | "createdDate">;
 
 export function necessityTemplateToDb(info: NecessityTemplate): DbNecessityTemplate {
     return {
