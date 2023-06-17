@@ -17,7 +17,6 @@ export const doAuth: RequestHandler = async (req, res) => {
     }
 
     const hashpwd = await bcrypt.hash(password, BCRYPT_SALT);
-    // Update this to use the new database.
     const user = await findByCredentials(ci, hashpwd);
 
     if (!user) {

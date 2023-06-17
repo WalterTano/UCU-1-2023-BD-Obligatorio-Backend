@@ -1,11 +1,6 @@
 import { GeoConfig } from "./geoConfig";
 import { LocalGeolocation } from "./localGeoLocation";
 
-export const dbUserColumns: (keyof DbUser)[] = [
-    "ci", "nombre", "apellido", "email", "geo_distancia",
-    "geo_activado", "es_admin", "latitud", "longitud"
-];
-
 export interface DbUser {
     ci: number,
     nombre: string,

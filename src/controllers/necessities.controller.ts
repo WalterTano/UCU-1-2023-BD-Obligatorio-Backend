@@ -1,20 +1,19 @@
 import { RequestHandler } from "express";
 import { toRequestHandler } from "../helpers/controllers.helpers";
-import { getNecessitiesByUser as modelGetNecessitiesByUser, getNecessities as modelGetNecessities, getNecessityById as modelGetNecessityById, updateNecessity, deleteNecessity as modelDeleteNecessity } from "../models/necessity";
+import * as necessityModel from "../models/necessity";
 import { insertNecessity } from "../models/necessity";
 
 // TODO: in all update controllers, modify return format logic:
-//  If resource not found: { success: false, errorMessage: "Resource not found" }
-//  If template is empty: { success: true, data: false }
-//  If update is success: { success: true, data: true }
+//  If template is empty: { success: false, errorMessage: "At least one field must be included in the template" }
+//  If update is success: { success: true, data: number }
 
 // TODO: in all delete controllers: modify return format logic:
 // If resource is deleted: { success: true, data: void 0 }
-// If resource is not found: { success: false, errorMessage: "Resource not found" }
+// If resource is not found: { success: false, errorMessage: "Record not found" }
 
 export const getNecessities: RequestHandler = toRequestHandler(
     async (_req) => {
-        const res = await modelGetNecessities();
+        const res = await necessityModel.getNecessities({});
         return { success: true, data: res };
     }
 );
@@ -26,7 +25,7 @@ export const getNecessitiesByUser: RequestHandler<{ userId: string }> = toReques
             return { success: false, errorMessage: "Invalid user id" };
         }
 
-        const res = await modelGetNecessitiesByUser(userId);
+        const res = await necessityModel.getNecessitiesByUser(userId);
         return { success: true, data: res };
     }
 );
@@ -38,7 +37,7 @@ export const getNecessity: RequestHandler<{ id: string }> = toRequestHandler(
             return { success: false, errorMessage: "Invalid id" };
         }
 
-        const res = await modelGetNecessityById(id);
+        const res = await necessityModel.getNecessityById(id);
         if (res) {
             return { success: true, data: res };
         } else {
@@ -64,7 +63,7 @@ export const putNecessity: RequestHandler<{ id: string }> = toRequestHandler(
 
         const template = req.body;
 
-        const result = await updateNecessity(id, template);
+        const result = await necessityModel.updateNecessity(id, template);
         return result;
     }
 );
@@ -76,7 +75,7 @@ export const deleteNecessity: RequestHandler<{ id: string }> = toRequestHandler(
             return { success: false, errorMessage: "Invalid id" };
         }
 
-        const result = await modelDeleteNecessity(id);
+        const result = await necessityModel.deleteNecessity(id);
         return result;
     }
 );

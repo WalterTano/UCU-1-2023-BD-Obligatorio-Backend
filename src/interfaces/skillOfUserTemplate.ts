@@ -1,12 +1,12 @@
-export interface SkillOfUserTemplate {
-    skillName: string,
-    description?: string | null
-}
-
 export interface DbSkillOfUserTemplate {
     ci: number,
     nombre_habilidad: string,
     descripcion: string | null
+}
+
+export interface SkillOfUserTemplate {
+    skillName: string,
+    description?: string | null
 }
 
 export function skillOfUserTemplateToDb(ci: number, info: SkillOfUserTemplate): DbSkillOfUserTemplate {

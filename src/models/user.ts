@@ -1,38 +1,49 @@
-import { DbUser, User, dbUserColumns, userFromDb, userToDb } from '../interfaces/user';
+import { DbUser, User, userFromDb, userToDb } from '../interfaces/user';
 import dbConn from "../configs/db.config";
 import { UserTemplate, userTemplateToDb } from '../interfaces/userTemplate';
 import { Result } from '../types/result';
 import { mapResult, unwrapResult } from '../helpers/resultHelpers';
+import { SelectQuery } from '../db/interfaces/selectQuery';
 
-export async function getUsers(): Promise<User[]> {
+export async function selectAllFromUsers(query: Omit<SelectQuery, "table" | "columns">): Promise<DbUser[]> {
     const sqlRes = await dbConn.select({
+        columns: [
+            "ci", "nombre", "apellido", "email", "geo_distancia",
+            "geo_activado", "es_admin", "latitud", "longitud"
+            ],
         table: "usuario",
-        columns: dbUserColumns
+        ...query
     });
 
     const res: DbUser[] = unwrapResult(sqlRes);
+    return res;
+}
+
+export async function getUsers(): Promise<User[]> {
+    const res = await selectAllFromUsers({});
     return res.map(userFromDb);
 }
 
-export async function getPassword(ci: string): Promise<string> {
-    throw new Error("Not implemented yet");
-}
+export async function findByCredentials(ci: string, hashpwd: string): Promise<User | undefined> {
+    const sqlRes = await selectAllFromUsers({
+        conditions: [
+            { column: "ci", operation: "=", value: ci },
+            { column: "hashpwd", operation: "=", value: hashpwd }
+        ]
+    });
 
-export async function findByCredentials(ci: string, hashpwd: string): Promise<User> {
-    throw new Error("Not implemented yet");
+    const res = sqlRes.at(0);
+    return res && userFromDb(res);
 }
 
 export async function findByCI(ci: string): Promise<User | undefined> {
-    const sqlRes = await dbConn.select({
-        table: "usuario",
-        columns: dbUserColumns,
+    const sqlRes = await selectAllFromUsers({
         conditions: [
             { column: "ci", operation: "=", value: ci }
         ]
     });
 
-    const res: DbUser | undefined = unwrapResult<DbUser[]>(sqlRes).at(0);
-
+    const res: DbUser | undefined = sqlRes.at(0);
     return res && userFromDb(res);
 }
 
@@ -65,7 +76,6 @@ export async function updateUser(ci: number, user: Omit<User, "id">): Promise<Re
     });
 }
 
-// TODO minor: Change return logic to mapResult
 export async function deleteUser(ci: number): Promise<Result<boolean>> {
     const res = await dbConn.delete({
         table: "usuario",
@@ -74,5 +84,5 @@ export async function deleteUser(ci: number): Promise<Result<boolean>> {
         ]
     });
 
-    return res.success ? { success: true, data: res.data > 0 } : res;
+    return mapResult(res, data => data > 0);
 }

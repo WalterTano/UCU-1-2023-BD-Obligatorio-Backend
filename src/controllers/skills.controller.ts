@@ -1,15 +1,14 @@
 import { RequestHandler } from "express";
 import { toRequestHandler } from "../helpers/controllers.helpers";
-import { getSkillOfUser, getSkillsOfUser, newSkillOfUser, getAllSkills, updateSkillOfUser, deleteSkillOfUser } from "../models/skill";
+import * as skillModel from "../models/skill";
 
 export const getSkills: RequestHandler = toRequestHandler(
     async (_req) => {
-        const skills = getAllSkills();
+        const skills = skillModel.getAllSkills();
         return { success: true, data: skills };
     }
 );
 
-// TODO: Replace multi-query mechanisms with join views
 export const getSkillsByUser: RequestHandler<{ userId: string }> = toRequestHandler(
     async (req) => {
         const userId = parseInt(req.params.userId);
@@ -17,7 +16,7 @@ export const getSkillsByUser: RequestHandler<{ userId: string }> = toRequestHand
             return { success: false, errorMessage: "Invalid CI" };
         }
 
-        const data = await getSkillsOfUser(userId);
+        const data = await skillModel.getSkillsOfUser(userId);
 
         return { success: true, data };
     }
@@ -32,7 +31,7 @@ export const getSkillByUser: RequestHandler<{ userId: string, skillId: string }>
 
         const skillId = req.params.skillId;
 
-        const skillOfUser = await getSkillOfUser(userId, skillId);
+        const skillOfUser = await skillModel.getSkillOfUser(userId, skillId);
         if (skillOfUser == undefined) {
             return { success: false, errorMessage: `The user ${userId} doesn't have the skill ${skillId}` };
         }
@@ -56,7 +55,7 @@ export const postSkill: RequestHandler<{ userId: string }> = toRequestHandler(
             return { success: false, errorMessage: "Invalid skill" };
         }
 
-        const res = await newSkillOfUser(userId, { description: descripcion, skillName: habilidad });
+        const res = await skillModel.newSkillOfUser(userId, { description: descripcion, skillName: habilidad });
         return res;
     }
 );
@@ -75,7 +74,7 @@ export const putSkill: RequestHandler<{ userId: string, skillId: string }> = toR
             return { success: false, errorMessage: `Invalid description` };
         }
 
-        const res = await updateSkillOfUser({ userId, skillName: skillId }, descripcion || null);
+        const res = await skillModel.updateSkillOfUser({ userId, skillName: skillId }, descripcion || null);
         return res;
     }
 );
@@ -89,7 +88,7 @@ export const deleteSkill: RequestHandler<{ userId: string, skillId: string }> = 
 
         const skillId = req.params.skillId;
 
-        const res = deleteSkillOfUser({ userId, skillName: skillId });
+        const res = skillModel.deleteSkillOfUser({ userId, skillName: skillId });
         return res;
     }
 );

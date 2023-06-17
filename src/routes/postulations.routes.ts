@@ -1,10 +1,6 @@
 import { RequestHandler, Router } from "express";
 import { deleteSkill, getSkillByUser, getSkills, postSkill, putSkill } from "../controllers/skills.controller";
 
-/*
-TODO: Determine full path to postulation API
-*/
-
 const router = Router();
 const BASE_ROUTE = '/postulations';
 
