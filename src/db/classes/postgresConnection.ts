@@ -26,7 +26,7 @@ export class PostgresConnection implements DatabaseConnection {
         const sqlLimit = limitToSql(this.sql, q.limit);
 
         return resFromPromise(
-            this.sql`SELECT ${sqlCols} FROM ${sqlTable} ${sqlConditions} ${sqlOrder} ${sqlLimit}`
+            this.sql`SELECT DISTINCT ${sqlCols} FROM ${sqlTable} ${sqlConditions} ${sqlOrder} ${sqlLimit}`
         );
     }
 
