@@ -41,8 +41,6 @@ export class PostgresConnection implements DatabaseConnection {
         );
     }
 
-    // TODO: Fix error
-    // Throws an error if q.values is an empty object
     update(q: UpdateQuery): Promise<Result<number | undefined>> {
         const values = q.values;
         for (let key in values) {

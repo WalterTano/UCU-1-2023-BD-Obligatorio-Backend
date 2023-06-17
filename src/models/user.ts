@@ -74,5 +74,5 @@ export async function deleteUser(ci: number): Promise<Result<boolean>> {
         ]
     });
 
-    return res.success ? { success: true, data: res.data > 0 } : res;
+    return mapResult(res, data => data > 0);
 }
