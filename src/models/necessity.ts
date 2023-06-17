@@ -1,7 +1,7 @@
 import dbConn from "../configs/db.config";
 import { DbNecessity, Necessity, necessityFromDb } from "../interfaces/necessity"
 import { SelectQuery } from "../db/interfaces/selectQuery";
-import { mapResult, unwrapResult } from "../helpers/resultHelpers";
+import { chainResult, mapResult, unwrapResult } from "../helpers/resultHelpers";
 import { DbNecessityTemplate, NecessityTemplate, necessityTemplateToDb } from "../interfaces/necessityTemplate";
 import { Result } from "../types/result";
 import { NecessityFilter } from "../interfaces/necessityFilter";
@@ -58,23 +58,28 @@ export async function insertNecessity(template: NecessityTemplate): Promise<Resu
     });
 }
 
-export async function updateNecessity(id: number, template: Omit<NecessityTemplate, "userId">): Promise<Result<number | undefined>> {
+export async function updateNecessity(id: number, template: Omit<NecessityTemplate, "userId">): Promise<Result<number>> {
     const dbTemp = necessityTemplateToDb({ ...template, userId: 0 });
 
     const dbInput: Partial<DbNecessityTemplate> = { ...dbTemp };
     delete dbInput.ci_creador;
 
-    console.log("1:", dbInput);
-    return await dbConn.update({
+    const res = await dbConn.update({
         table: "necesidad",
         values: dbInput,
         conditions: [
             { column: "id", operation: "=", value: id }
         ]
     });
+
+    return chainResult(res,
+        data => data == undefined
+            ? { success: false, errorMessage: "At least one field must be included in the template" }
+            : { success: true, data }
+    );
 }
 
-export async function deleteNecessity(id: number): Promise<Result<boolean>> {
+export async function deleteNecessity(id: number): Promise<Result<void>> {
     const res = await dbConn.delete({
         table: "necesidad",
         conditions: [
@@ -82,5 +87,9 @@ export async function deleteNecessity(id: number): Promise<Result<boolean>> {
         ]
     });
 
-    return mapResult(res, data => data > 0);
+    return chainResult(res,
+        data => data > 0
+            ? { success: false, errorMessage: "Record not found" }
+            : { success: true, data: void 0 }
+    );
 }
