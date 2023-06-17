@@ -4,6 +4,7 @@ import { UserTemplate, userTemplateToDb } from '../interfaces/userTemplate';
 import { Result } from '../types/result';
 import { chainResult, mapResult, unwrapResult } from '../helpers/resultHelpers';
 import { SelectQuery } from '../db/interfaces/selectQuery';
+import { UserFilter } from '../interfaces/userFilter';
 
 export async function selectAllFromUsers(query: Omit<SelectQuery, "table" | "columns">): Promise<DbUser[]> {
     const sqlRes = await dbConn.select({
@@ -19,7 +20,8 @@ export async function selectAllFromUsers(query: Omit<SelectQuery, "table" | "col
     return res;
 }
 
-export async function getUsers(): Promise<User[]> {
+// TODO: add filters feature for endpoint for all necessities
+export async function getUsers(filter: UserFilter): Promise<User[]> {
     const res = await selectAllFromUsers({});
     return res.map(userFromDb);
 }
