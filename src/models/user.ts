@@ -5,13 +5,17 @@ import { Result } from '../types/result';
 import { chainResult, mapResult, unwrapResult } from '../helpers/resultHelpers';
 import { SelectQuery } from '../db/interfaces/selectQuery';
 import { UserFilter } from '../interfaces/userFilter';
+import { Condition } from '../db/interfaces/condition';
+import { isNotUndefined } from '../helpers/isNotUndefined';
+
+const columns = [
+    "ci", "nombre", "apellido", "email", "geo_distancia",
+    "geo_activado", "es_admin", "latitud", "longitud"
+];
 
 export async function selectAllFromUsers(query: Omit<SelectQuery, "table" | "columns">): Promise<DbUser[]> {
     const sqlRes = await dbConn.select({
-        columns: [
-            "ci", "nombre", "apellido", "email", "geo_distancia",
-            "geo_activado", "es_admin", "latitud", "longitud"
-        ],
+        columns: columns,
         table: "usuario",
         ...query
     });
@@ -20,9 +24,34 @@ export async function selectAllFromUsers(query: Omit<SelectQuery, "table" | "col
     return res;
 }
 
+function filterToConditions(filter: UserFilter): Condition[] {
+    const firstNameCondition: Condition | undefined =
+        filter.firstName !== undefined
+            ? { column: "nombre", operation: "LIKE", value: `%${filter.firstName}%` }
+            : undefined;
+    
+    const lastNameCondition: Condition | undefined =
+        filter.lastName !== undefined
+            ? { column: "apellido", operation: "LIKE", value: `%${filter.lastName}%` }
+            : undefined;
+    
+    const skillCondition: Condition | undefined =
+        filter.skills
+            ? { column: "nombre_habilidad", operation: "IN", value: filter.skills }
+            : undefined;
+
+    return [firstNameCondition, lastNameCondition, skillCondition].filter(isNotUndefined);
+}
+
 // TODO: add filters feature for endpoint for all necessities
 export async function getUsers(filter: UserFilter): Promise<User[]> {
-    const res = await selectAllFromUsers({});
+    const sqlRes = await dbConn.select({
+        table: "usuario_habilidad",
+        columns: columns,
+        conditions: filterToConditions(filter)
+    });
+
+    const res: DbUser[] = unwrapResult(sqlRes);
     return res.map(userFromDb);
 }
 
