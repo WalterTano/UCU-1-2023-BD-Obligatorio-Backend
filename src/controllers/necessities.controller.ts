@@ -4,17 +4,16 @@ import * as necessityModel from "../models/necessity";
 import { insertNecessity } from "../models/necessity";
 
 // TODO: in all update controllers, modify return format logic:
-//  If resource not found: { success: false, errorMessage: "Resource not found" }
-//  If template is empty: { success: true, data: false }
-//  If update is success: { success: true, data: true }
+//  If template is empty: { success: false, errorMessage: "At least one field must be included in the template" }
+//  If update is success: { success: true, data: number }
 
 // TODO: in all delete controllers: modify return format logic:
 // If resource is deleted: { success: true, data: void 0 }
-// If resource is not found: { success: false, errorMessage: "Resource not found" }
+// If resource is not found: { success: false, errorMessage: "Record not found" }
 
 export const getNecessities: RequestHandler = toRequestHandler(
     async (_req) => {
-        const res = await necessityModel.getNecessities();
+        const res = await necessityModel.getNecessities({});
         return { success: true, data: res };
     }
 );
