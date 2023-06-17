@@ -44,19 +44,3 @@ export function necessityFromDb(info: DbNecessity): Necessity {
         }
     };
 }
-
-export function necessityToDb(info: Necessity): DbNecessity {
-    return {
-        id: info.id,
-        ci_creador: info.userId,
-        titulo: info.title,
-        descripcion: info.description,
-        estado: info.status,
-        fecha_creacion: info.createdDate,
-        latitud: info.location.latitude,
-        longitud: info.location.longitude,
-        fecha_inicio: info.startDate,
-        fecha_fin: info.endDate,
-        fecha_solucionada: info.solvedDate,
-    };
-}
