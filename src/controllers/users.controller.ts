@@ -3,7 +3,7 @@ import * as userModel from "../models/user";
 import { toRequestHandler } from "../helpers/controllers.helpers";
 
 export const getUsers: RequestHandler = toRequestHandler(async () => {
-    const users = await userModel.getUsers();
+    const users = await userModel.getUsers({});
     return { success: true, data: users };
 });
 
