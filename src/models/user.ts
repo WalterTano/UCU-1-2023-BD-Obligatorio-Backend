@@ -24,11 +24,15 @@ export async function getUsers(): Promise<User[]> {
     return res.map(userFromDb);
 }
 
+// TODO: Determine whether we should want to be able to get an user's plain password
+// TODO: Implement function
 export async function getPassword(ci: string): Promise<string> {
     throw new Error("Not implemented yet");
 }
 
-export async function findByCredentials(ci: string, hashpwd: string): Promise<User> {
+// TODO: Determine whether hashpwd or password should be passed as parameter
+// TODO: Implement function
+export async function findByCredentials(ci: string, hashpwd: string): Promise<User | undefined> {
     throw new Error("Not implemented yet");
 }
 
