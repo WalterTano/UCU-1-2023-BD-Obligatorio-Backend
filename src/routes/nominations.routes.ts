@@ -2,7 +2,7 @@ import { RequestHandler, Router } from "express";
 import { deleteSkill, getSkillByUser, getSkills, postSkill, putSkill } from "../controllers/skills.controller";
 
 const router = Router();
-const BASE_ROUTE = '/postulations';
+const BASE_ROUTE = '/nominations';
 
 router.get(BASE_ROUTE, getSkills);
 
