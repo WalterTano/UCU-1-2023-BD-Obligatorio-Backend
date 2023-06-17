@@ -45,7 +45,6 @@ export async function getSkillOfUser(ci: number, skillId: string): Promise<Skill
     return res && skillOfUserFromDb(res);
 }
 
-// TODO: Change return type to Promise<Result<SkillOfUserId>>
 export async function newSkillOfUser(ci: number, info: SkillOfUserTemplate): Promise<Result<SkillOfUserId>> {
     const sqlRes = await dbConn.insert({
         idColumns: ["nombre_habilidad", "ci"],
