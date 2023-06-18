@@ -54,7 +54,6 @@ function filterToConditions(filter: NecessityFilter): Condition[] {
     return [skillsFilter, ...startDateFilter, ...endDateFilter, searchTermFilter].filter(isNotUndefined);
 }
 
-// TODO: add filters feature for endpoint for all necessities
 export async function getNecessities(filter: NecessityFilter): Promise<Necessity[]> {
     const sqlRes = await dbConn.select({
         columns: columns,

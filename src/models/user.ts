@@ -43,7 +43,6 @@ function filterToConditions(filter: UserFilter): Condition[] {
     return [firstNameCondition, lastNameCondition, skillCondition].filter(isNotUndefined);
 }
 
-// TODO: add filters feature for endpoint for all necessities
 export async function getUsers(filter: UserFilter): Promise<User[]> {
     const sqlRes = await dbConn.select({
         table: "usuario_habilidad",

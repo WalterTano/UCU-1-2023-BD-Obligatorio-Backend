@@ -56,7 +56,6 @@ export const getNecessities: RequestHandler = toRequestHandler(
             skills
         };
 
-        console.log("1:", filter);
         const res = await necessityModel.getNecessities(filter);
 
         return { success: true, data: res };
