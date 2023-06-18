@@ -39,6 +39,18 @@ export async function getNominations(filter: NominationFilter): Promise<Nominati
     return sqlRes.map(nominationFromDb);
 }
 
+export async function getNomination(id: NominationId): Promise<Nomination | undefined> {
+    const sqlRes = await selectAllFromNominations({
+        conditions: [
+            { column: "id_necesidad", operation: "=", value: id.necessityId },
+            { column: "ci_postulante", operation: "=", value: id.userId }
+        ]
+    });
+
+    const res = sqlRes.at(0);
+    return res && nominationFromDb(res);
+}
+
 export async function insertNomination(template: NominationTemplate): Promise<Result<void>> {
     const sqlRes = await dbConn.insert({
         table: "postulacion",
@@ -53,7 +65,7 @@ export async function updateNomination(id: NominationId, newStatus: string): Pro
     const res = await dbConn.update({
         table: "postulacion",
         values: {
-            status: newStatus
+            estado: newStatus
         },
         conditions: [
             { column: "id_necesidad", operation: "=", value: id.necessityId },
@@ -79,7 +91,7 @@ export async function deleteNomination(id: NominationId): Promise<Result<void>> 
 
     return chainResult(res,
         data => data > 0
-            ? { success: false, errorMessage: "Record not found" }
-            : { success: true, data: void 0 }
+            ? { success: true, data: void 0 }
+            : { success: false, errorMessage: "Record not found" }
     );
 }

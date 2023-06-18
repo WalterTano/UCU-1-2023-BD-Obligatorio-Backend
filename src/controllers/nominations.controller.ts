@@ -1,25 +1,7 @@
 import { RequestHandler } from "express";
 import { toRequestHandler } from "../helpers/controllers.helpers";
-import { ParsedQs } from 'qs';
-import { Result } from "../types/result";
 import * as nominationModel from '../models/nomination';
-
-function getNumericQueryParam(v: string | string[] | ParsedQs | ParsedQs[] | undefined, msg: string): Result<number | undefined> {
-    if (v === undefined) {
-        return { success: true, data: undefined };
-    }
-    
-    if (typeof v !== "string") {
-        return { success: false, errorMessage: msg };
-    }
-
-    const num = parseInt(v);
-    if (isNaN(num)) {
-        return { success: false, errorMessage: msg };
-    }
-
-    return { success: true, data: num };
-}
+import { getNumericQueryParam } from "../db/helpers/getQueryParams";
 
 export const getNominations: RequestHandler = toRequestHandler(
     async (req) => {
@@ -40,6 +22,23 @@ export const getNominations: RequestHandler = toRequestHandler(
     }
 );
 
+export const getNomination: RequestHandler<{ necessityId: string, userId: string }> = toRequestHandler(
+    async (req) => {
+        const necessityId = parseInt(req.params.necessityId);
+        if (isNaN(necessityId)) {
+            return { success: false, errorMessage: "Invalid necessity id" };
+        }
+
+        const userId = parseInt(req.params.userId);
+        if (isNaN(userId)) {
+            return { success: false, errorMessage: "Invalid user id" };
+        }
+
+        const res = await nominationModel.getNomination({ necessityId, userId });
+        return { success: true, data: res };
+    }
+);
+
 export const postNomination: RequestHandler = toRequestHandler(
     async (req) => {
         const input = req.body;
@@ -49,12 +48,41 @@ export const postNomination: RequestHandler = toRequestHandler(
     }
 );
 
-// TODO: determine format of nomination id
-export const putNomination: RequestHandler<{posId: string}> = async (req, res) => {
-    res.status(500).send("Not implemented yet");
-};
+export const putNomination: RequestHandler<{ necessityId: string, userId: string }> = toRequestHandler(
+    async (req) => {
+        const necessityId = parseInt(req.params.necessityId);
+        if (isNaN(necessityId)) {
+            return { success: false, errorMessage: "Invalid necessity id" };
+        }
 
-// TODO: determine format of nomination id
-export const deleteNomination: RequestHandler<{posId: string}> = async (req, res) => {
-    res.status(500).send("Not implemented yet");
-};
+        const userId = parseInt(req.params.userId);
+        if (isNaN(userId)) {
+            return { success: false, errorMessage: "Invalid user id" };
+        }
+
+        const { newStatus } = req.body;
+        if (typeof newStatus !== "string") {
+            return { success: false, errorMessage: "Invalid new status" };
+        }
+
+        const result = await nominationModel.updateNomination({ necessityId, userId }, newStatus);
+        return result;
+    }
+);
+
+export const deleteNomination: RequestHandler<{ necessityId: string, userId: string }> = toRequestHandler(
+    async (req) => {
+        const necessityId = parseInt(req.params.necessityId);
+        if (isNaN(necessityId)) {
+            return { success: false, errorMessage: "Invalid necessity id" };
+        }
+
+        const userId = parseInt(req.params.userId);
+        if (isNaN(userId)) {
+            return { success: false, errorMessage: "Invalid user id" };
+        }
+
+        const result = await nominationModel.deleteNomination({ necessityId, userId });
+        return result;
+    }
+);

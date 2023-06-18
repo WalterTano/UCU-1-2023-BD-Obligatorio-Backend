@@ -88,7 +88,7 @@ export async function deleteSkillOfUser(id: SkillOfUserId): Promise<Result<void>
 
     return chainResult(sqlRes,
         data => data > 0
-            ? { success: false, errorMessage: "Record not found" }
-            : { success: true, data: void 0 }
+            ? { success: true, data: void 0 }
+            : { success: false, errorMessage: "Record not found" }
     );
 }
