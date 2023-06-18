@@ -23,3 +23,11 @@ export function chainResult<T, U>(res: Result<T>, fn: (v: T) => Result<U>): Resu
         return res;
     }
 }
+
+export function mapErrResult<T>(res: Result<T>, errFn: (e: string) => string): Result<T> {
+    if (res.success) {
+        return res;
+    } else {
+        return { success: false, errorMessage: errFn(res.errorMessage) };
+    }
+}
