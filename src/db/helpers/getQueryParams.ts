@@ -2,7 +2,6 @@ import { ParsedQs } from 'qs';
 import { Result } from '../../types/result';
 import { isString } from '../../helpers/isString';
 
-// TODO: make sure the nomination controller uses this function
 export function getNumericQueryParam(v: string | string[] | ParsedQs | ParsedQs[] | undefined, msg: string): Result<number | undefined> {
     const strRes = getStringQueryParam(v, msg);
     if (!strRes.success) {

@@ -4,10 +4,19 @@ import { SelectQuery } from "../db/interfaces/selectQuery";
 import { chainResult, mapResult, unwrapResult } from "../helpers/resultHelpers";
 import { DbNecessityTemplate, NecessityTemplate, necessityTemplateToDb } from "../interfaces/necessityTemplate";
 import { Result } from "../types/result";
-import { NecessityFilter } from "../interfaces/necessityFilter";
+import { DateRange, NecessityFilter } from "../interfaces/necessityFilter";
+import { Condition } from "../db/interfaces/condition";
+import { isNotUndefined } from "../helpers/isNotUndefined";
+
+const columns = [
+    "id", "ci_creador", "titulo", "descripcion",
+    "estado", "fecha_creacion", "latitud", "longitud",
+    "fecha_inicio", "fecha_fin", "fecha_solucionada"
+];
 
 async function selectAllFromNecessities(query: Omit<SelectQuery, "table" | "columns">): Promise<DbNecessity[]> {
     const sqlRes = await dbConn.select({
+        columns: columns,
         table: "necesidad",
         ...query
     });
@@ -16,9 +25,44 @@ async function selectAllFromNecessities(query: Omit<SelectQuery, "table" | "colu
     return res;
 }
 
+function dateRangeToConditions(filter: DateRange | undefined, column: string): (Condition | undefined)[] {
+    return [
+        filter?.min && { column, operation: ">=", value: filter.min },
+        filter?.max && { column, operation: "<=", value: filter.max }
+    ];
+}
+
+function filterToConditions(filter: NecessityFilter): Condition[] {
+    const skillsFilter: Condition | undefined =
+        filter.skills
+            ? { column: "nombre_habilidad", operation: "IN", value: filter.skills }
+            : undefined;
+
+    const startDateFilter = dateRangeToConditions(filter.startDate, "fecha_inicio");
+
+    const endDateFilter = dateRangeToConditions(filter.endDate, "fecha_fin");
+
+    const searchTermFilter: Condition | undefined =
+        filter.searchTerm
+            ? {
+                type: "disjunction", values: [
+                    { column: "titulo", operation: "LIKE", value: `%${filter.searchTerm}%` },
+                    { column: "descripcion", operation: "LIKE", value: `%${filter.searchTerm}%` }
+                ]
+            } : undefined;
+
+    return [skillsFilter, ...startDateFilter, ...endDateFilter, searchTermFilter].filter(isNotUndefined);
+}
+
 // TODO: add filters feature for endpoint for all necessities
 export async function getNecessities(filter: NecessityFilter): Promise<Necessity[]> {
-    const res = await selectAllFromNecessities({});
+    const sqlRes = await dbConn.select({
+        columns: columns,
+        table: "necesidad_habilidad",
+        conditions: filterToConditions(filter)
+    });
+
+    const res: DbNecessity[] = unwrapResult(sqlRes);
     return res.map(necessityFromDb);
 }
 

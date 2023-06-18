@@ -1,8 +1,8 @@
 import { PendingQuery, Sql } from "postgres";
-import { Condition } from "../interfaces/condition";
+import { Condition, SimpleCondition } from "../interfaces/condition";
 
 const operationsMap: {
-    [index in Condition["operation"]]: (sql: Sql, value: any) => PendingQuery<any>
+    [index in SimpleCondition["operation"]]: (sql: Sql, value: any) => PendingQuery<any>
 } = {
     "<": (sql, v) => sql`< ${v}`,
     ">": (sql, v) => sql`> ${v}`,
@@ -13,11 +13,24 @@ const operationsMap: {
     "LIKE": (sql, v) => sql`LIKE ${v}`
 };
 
-function conditionToSql(sql: Sql, c: Condition): PendingQuery<any> {
+function simpleConditionToSql(sql: Sql, c: SimpleCondition): PendingQuery<any> {
     const sqlColumn = sql(c.column);
     const sqlRemainder = operationsMap[c.operation](sql, c.value);
 
     return sql`${sqlColumn} ${sqlRemainder}`;
+}
+
+function conditionToSql(sql: Sql, c: Condition): PendingQuery<any> {
+    if (c.type === "disjunction") {
+        let res: PendingQuery<any> = conditionToSql(sql, c.values[0]);
+        for (const miniCondition of c.values.slice(1)) {
+            const sqlCondition = conditionToSql(sql, miniCondition);
+            res = sql`${res} OR ${sqlCondition}`;
+        }
+        return sql`(${res})`;
+    } else {
+        return simpleConditionToSql(sql, c);
+    }
 }
 
 export function conditionsToSql(sql: Sql, conditions?: Condition[]): PendingQuery<any> {
