@@ -1,11 +1,18 @@
 import { RequestHandler } from "express";
 import { toRequestHandler } from "../helpers/controllers.helpers";
 import * as notificationModel from '../models/notification';
+import { getNumericQueryParam } from "../db/helpers/getQueryParams";
 
 // TODO: Add filter by user id
 export const getNotifications: RequestHandler = toRequestHandler(
     async (req) => {
-        const notifications = await notificationModel.getNotifications();
+        const userIdRes = getNumericQueryParam(req.query.userId, "Invalid user id");
+        if (!userIdRes.success) {
+            return userIdRes;
+        }
+        const userId = userIdRes.data;
+
+        const notifications = await notificationModel.getNotifications({ userId });
         return { success: true, data: notifications };
     }
 );

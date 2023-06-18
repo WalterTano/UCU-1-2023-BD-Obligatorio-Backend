@@ -1,7 +1,10 @@
 import dbConn from "../configs/db.config";
+import { Condition } from "../db/interfaces/condition";
 import { SelectQuery } from "../db/interfaces/selectQuery";
+import { isNotUndefined } from "../helpers/isNotUndefined";
 import { chainResult, mapResult, unwrapResult } from "../helpers/resultHelpers";
 import { DbNotification, ApiNotification, notificationFromDb } from "../interfaces/notification";
+import { NotificationFilter } from "../interfaces/notificationFilter";
 import { NotificationTemplate, notificationTemplateToDb } from "../interfaces/notificationTemplate";
 import { Result } from "../types/result";
 
@@ -15,8 +18,20 @@ async function selectAllFromNotifications(query: Omit<SelectQuery, "table" | "co
     return res;
 }
 
-export async function getNotifications(): Promise<ApiNotification[]> {
-    const res = await selectAllFromNotifications({});
+function filterToConditions(filter: NotificationFilter): Condition[] {
+    const userIdFilter : Condition | undefined =
+        filter.userId
+            ? { column: "ci_usuario", operation: "=", value: filter.userId }
+            : undefined;
+
+    return [userIdFilter].filter(isNotUndefined);
+}
+
+export async function getNotifications(filter: NotificationFilter): Promise<ApiNotification[]> {
+    const res = await selectAllFromNotifications({
+        conditions: filterToConditions(filter)
+    });
+
     return res.map(notificationFromDb);
 }
 
