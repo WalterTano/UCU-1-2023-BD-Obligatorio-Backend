@@ -1,5 +1,5 @@
 import dbConn from "../configs/db.config";
-import { mapResult, unwrapResult } from "../helpers/resultHelpers";
+import { chainResult, mapResult, unwrapResult } from "../helpers/resultHelpers";
 import { DbSkillOfUser, SkillOfUser, skillOfUserFromDb } from "../interfaces/skillOfUser";
 import { SkillOfUserId } from "../interfaces/skillOfUserId";
 import { SkillOfUserTemplate, skillOfUserTemplateToDb } from "../interfaces/skillOfUserTemplate";
@@ -11,7 +11,7 @@ export async function getAllSkills(): Promise<string[]> {
         table: "habilidad"
     });
 
-    const res: {nombre: string}[] = unwrapResult(sqlRes);
+    const res: { nombre: string }[] = unwrapResult(sqlRes);
 
     return res.map(v => v.nombre);
 }
@@ -58,19 +58,8 @@ export async function newSkillOfUser(ci: number, info: SkillOfUserTemplate): Pro
     }));
 }
 
-export async function deleteSkillOfUser(id: SkillOfUserId): Promise<Result<void>> {
-    const sqlRes = await dbConn.delete({
-        table: "usuario_tiene_habilidad",
-        conditions: [
-            { column: "ci", operation: "=", value: id.userId },
-            { column: "nombre_habilidad", operation: "=", value: id.skillName }
-        ]
-    });
-    return mapResult(sqlRes, _ => void 0);
-}
-
-export async function updateSkillOfUser(id: SkillOfUserId, newDescripcion: string | null): Promise<Result<number | undefined>> {
-    return await dbConn.update({
+export async function updateSkillOfUser(id: SkillOfUserId, newDescripcion: string | null): Promise<Result<number>> {
+    const res = await dbConn.update({
         table: "usuario_tiene_habilidad",
         values: {
             descripcion: newDescripcion
@@ -80,4 +69,26 @@ export async function updateSkillOfUser(id: SkillOfUserId, newDescripcion: strin
             { column: "nombre_habilidad", operation: "=", value: id.skillName }
         ]
     });
+
+    return chainResult(res,
+        data => data == undefined
+            ? { success: false, errorMessage: "At least one field must be included in the template" }
+            : { success: true, data }
+    );
+}
+
+export async function deleteSkillOfUser(id: SkillOfUserId): Promise<Result<void>> {
+    const sqlRes = await dbConn.delete({
+        table: "usuario_tiene_habilidad",
+        conditions: [
+            { column: "ci", operation: "=", value: id.userId },
+            { column: "nombre_habilidad", operation: "=", value: id.skillName }
+        ]
+    });
+
+    return chainResult(sqlRes,
+        data => data > 0
+            ? { success: true, data: void 0 }
+            : { success: false, errorMessage: "Record not found" }
+    );
 }

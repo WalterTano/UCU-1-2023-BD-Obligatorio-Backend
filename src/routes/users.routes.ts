@@ -1,17 +1,17 @@
 import { Router } from "express";
-import { getUsers, getUser, postUser, putUser, deleteUser } from "../controllers/users.controller";
+import * as controller from "../controllers/users.controller";
 
 const BASE_ROUTE = '/users';
 const router = Router();
 
-router.get(BASE_ROUTE, getUsers);
+router.get(BASE_ROUTE, controller.getUsers);
 
-router.get(`${BASE_ROUTE}/:userId`, getUser);
+router.get(`${BASE_ROUTE}/:userId`, controller.getUser);
 
-router.post(BASE_ROUTE, postUser);
+router.post(BASE_ROUTE, controller.postUser);
 
-router.put(`${BASE_ROUTE}/:userId`, putUser);
+router.put(`${BASE_ROUTE}/:userId`, controller.putUser);
 
-router.delete(`${BASE_ROUTE}/:userId`, deleteUser);
+router.delete(`${BASE_ROUTE}/:userId`, controller.deleteUser);
 
 export { router as usersRouter };

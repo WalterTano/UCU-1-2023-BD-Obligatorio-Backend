@@ -2,18 +2,55 @@ import { RequestHandler } from "express";
 import { toRequestHandler } from "../helpers/controllers.helpers";
 import * as necessityModel from "../models/necessity";
 import { insertNecessity } from "../models/necessity";
-
-// TODO: in all update controllers, modify return format logic:
-//  If template is empty: { success: false, errorMessage: "At least one field must be included in the template" }
-//  If update is success: { success: true, data: number }
-
-// TODO: in all delete controllers: modify return format logic:
-// If resource is deleted: { success: true, data: void 0 }
-// If resource is not found: { success: false, errorMessage: "Record not found" }
+import { getNumericArrayQueryParam, getStringArrayQueryParam, getStringQueryParam } from "../db/helpers/getQueryParams";
+import { NecessityFilter } from "../interfaces/necessityFilter";
 
 export const getNecessities: RequestHandler = toRequestHandler(
-    async (_req) => {
-        const res = await necessityModel.getNecessities({});
+    async (req) => {
+        const idsRes = getNumericArrayQueryParam(req.query.ids, "Invalid id list");
+        if (!idsRes.success) return idsRes;
+        const ids = idsRes.data;
+
+        const startDateMinRes = getStringQueryParam(req.query.startDateMin, "Invalid start date min");
+        if (!startDateMinRes.success) return startDateMinRes;
+        const startDateMin = startDateMinRes.data;
+
+        const startDateMaxRes = getStringQueryParam(req.query.startDateMax, "Invalid start date min");
+        if (!startDateMaxRes.success) return startDateMaxRes;
+        const startDateMax = startDateMaxRes.data;
+
+        const endDateMinRes = getStringQueryParam(req.query.endDateMin, "Invalid start date min");
+        if (!endDateMinRes.success) return endDateMinRes;
+        const endDateMin = endDateMinRes.data;
+
+        const endDateMaxRes = getStringQueryParam(req.query.endDateMax, "Invalid start date min");
+        if (!endDateMaxRes.success) return endDateMaxRes;
+        const endDateMax = endDateMaxRes.data;
+
+        const searchTermRes = getStringQueryParam(req.query.searchTerm, "Invalid start date min");
+        if (!searchTermRes.success) return searchTermRes;
+        const searchTerm = searchTermRes.data;
+
+        const skillsRes = getStringArrayQueryParam(req.query.skills, "Invalid start date min");
+        if (!skillsRes.success) return skillsRes;
+        const skills = skillsRes.data;
+
+        const filter: NecessityFilter = {
+            ids,
+            startDate: {
+                min: startDateMin ? new Date(startDateMin) : undefined,
+                max: startDateMax ? new Date(startDateMax) : undefined
+            },
+            endDate: {
+                min: endDateMin ? new Date(endDateMin) : undefined,
+                max: endDateMax ? new Date(endDateMax) : undefined
+            },
+            searchTerm,
+            skills
+        };
+
+        const res = await necessityModel.getNecessities(filter);
+
         return { success: true, data: res };
     }
 );

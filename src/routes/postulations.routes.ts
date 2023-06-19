@@ -1,17 +1,17 @@
 import { RequestHandler, Router } from "express";
-import { deleteSkill, getSkillByUser, getSkills, postSkill, putSkill } from "../controllers/skills.controller";
+import * as controller from "../controllers/postulations.controller";
 
 const router = Router();
 const BASE_ROUTE = '/postulations';
 
-router.get(BASE_ROUTE, getSkills);
+router.get(BASE_ROUTE, controller.getPostulations);
 
-router.get(`${BASE_ROUTE}/:posId`, getSkillByUser);
+router.get(`${BASE_ROUTE}/:necessityId/:userId`, controller.getPostulation);
 
-router.post(BASE_ROUTE, postSkill);
+router.post(BASE_ROUTE, controller.postPostulation);
 
-router.put(`${BASE_ROUTE}/:skillId`, putSkill);
+router.put(`${BASE_ROUTE}/:necessityId/:userId`, controller.putPostulation);
 
-router.delete(`${BASE_ROUTE}/:skillId`, deleteSkill);
+router.delete(`${BASE_ROUTE}/:necessityId/:userId`, controller.deletePostulation);
 
 export const postulationRouter: RequestHandler = router;

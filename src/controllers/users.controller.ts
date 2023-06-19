@@ -1,11 +1,30 @@
 import { RequestHandler } from "express";
 import * as userModel from "../models/user";
 import { toRequestHandler } from "../helpers/controllers.helpers";
+import { getNumericArrayQueryParam, getStringArrayQueryParam, getStringQueryParam } from "../db/helpers/getQueryParams";
 
-export const getUsers: RequestHandler = toRequestHandler(async () => {
-    const users = await userModel.getUsers();
-    return { success: true, data: users };
-});
+export const getUsers: RequestHandler = toRequestHandler(
+    async (req) => {
+        const idsRes = getNumericArrayQueryParam(req.query.ids, "Invalid id list");
+        if (!idsRes.success) return idsRes;
+        const ids = idsRes.data;
+
+        const firstNameRes = getStringQueryParam(req.query.firstName, "Invalid first name");
+        if (!firstNameRes.success) return firstNameRes;
+        const firstName = firstNameRes.data;
+
+        const lastNameRes = getStringQueryParam(req.query.lastName, "Invalid first name");
+        if (!lastNameRes.success) return lastNameRes;
+        const lastName = lastNameRes.data;
+
+        const skillsRes = getStringArrayQueryParam(req.query.skills, "Invalid skills");
+        if (!skillsRes.success) return skillsRes;
+        const skills = skillsRes.data;
+
+        const users = await userModel.getUsers({ ids, firstName, lastName, skills });
+        return { success: true, data: users };
+    }
+);
 
 export const getUser: RequestHandler<{ userId: string }> = toRequestHandler(
     async (req) => {

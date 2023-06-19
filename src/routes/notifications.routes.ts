@@ -1,11 +1,5 @@
 import { Router } from "express";
-import {
-	deleteNotification,
-	getNotification,
-	getNotifications,
-	postNotification,
-	putNotification
-} from "../controllers/notifications.controller";
+import * as controller from "../controllers/notifications.controller";
 
 /*
 (Recurso)
@@ -18,14 +12,14 @@ Notificacion:
 const BASE_ROUTE = '/notifs';
 const router = Router();
 
-router.get(BASE_ROUTE, getNotifications);
+router.get(BASE_ROUTE, controller.getNotifications);
 
-router.get(`${BASE_ROUTE}/:notifId`, getNotification);
+router.get(`${BASE_ROUTE}/:notifId`, controller.getNotification);
 
-router.post(BASE_ROUTE, postNotification);
+router.post(BASE_ROUTE, controller.postNotification);
 
-router.put(`${BASE_ROUTE}/:notifId`, putNotification);
+router.put(`${BASE_ROUTE}/:notifId`, controller.putNotification);
 
-router.delete(`${BASE_ROUTE}/:notifId`, deleteNotification);
+router.delete(`${BASE_ROUTE}/:notifId`, controller.deleteNotification);
 
 export { router as notifsRouter };
