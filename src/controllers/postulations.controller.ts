@@ -1,9 +1,9 @@
 import { RequestHandler } from "express";
 import { toRequestHandler } from "../helpers/controllers.helpers";
-import * as nominationModel from '../models/nomination';
+import * as postulationModel from '../models/postulation';
 import { getNumericQueryParam } from "../db/helpers/getQueryParams";
 
-export const getNominations: RequestHandler = toRequestHandler(
+export const getPostulations: RequestHandler = toRequestHandler(
     async (req) => {
         const necessityIdRes = getNumericQueryParam(req.query.necessityId, "Invalid necessity id");
         if (!necessityIdRes.success) {
@@ -17,12 +17,12 @@ export const getNominations: RequestHandler = toRequestHandler(
         }
         const userId = userIdRes.data;
 
-        const res = await nominationModel.getNominations({ necessityId, userId });
+        const res = await postulationModel.getPostulations({ necessityId, userId });
         return { success: true, data: res };
     }
 );
 
-export const getNomination: RequestHandler<{ necessityId: string, userId: string }> = toRequestHandler(
+export const getPostulation: RequestHandler<{ necessityId: string, userId: string }> = toRequestHandler(
     async (req) => {
         const necessityId = parseInt(req.params.necessityId);
         if (isNaN(necessityId)) {
@@ -34,21 +34,21 @@ export const getNomination: RequestHandler<{ necessityId: string, userId: string
             return { success: false, errorMessage: "Invalid user id" };
         }
 
-        const res = await nominationModel.getNomination({ necessityId, userId });
+        const res = await postulationModel.getPostulation({ necessityId, userId });
         return { success: true, data: res };
     }
 );
 
-export const postNomination: RequestHandler = toRequestHandler(
+export const postPostulation: RequestHandler = toRequestHandler(
     async (req) => {
         const input = req.body;
 
-        const result = await nominationModel.insertNomination(input);
+        const result = await postulationModel.insertPostulation(input);
         return result;
     }
 );
 
-export const putNomination: RequestHandler<{ necessityId: string, userId: string }> = toRequestHandler(
+export const putPostulation: RequestHandler<{ necessityId: string, userId: string }> = toRequestHandler(
     async (req) => {
         const necessityId = parseInt(req.params.necessityId);
         if (isNaN(necessityId)) {
@@ -65,12 +65,12 @@ export const putNomination: RequestHandler<{ necessityId: string, userId: string
             return { success: false, errorMessage: "Invalid new status" };
         }
 
-        const result = await nominationModel.updateNomination({ necessityId, userId }, newStatus);
+        const result = await postulationModel.updatePostulation({ necessityId, userId }, newStatus);
         return result;
     }
 );
 
-export const deleteNomination: RequestHandler<{ necessityId: string, userId: string }> = toRequestHandler(
+export const deletePostulation: RequestHandler<{ necessityId: string, userId: string }> = toRequestHandler(
     async (req) => {
         const necessityId = parseInt(req.params.necessityId);
         if (isNaN(necessityId)) {
@@ -82,7 +82,7 @@ export const deleteNomination: RequestHandler<{ necessityId: string, userId: str
             return { success: false, errorMessage: "Invalid user id" };
         }
 
-        const result = await nominationModel.deleteNomination({ necessityId, userId });
+        const result = await postulationModel.deletePostulation({ necessityId, userId });
         return result;
     }
 );

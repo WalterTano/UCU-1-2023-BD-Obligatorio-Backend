@@ -1,5 +1,5 @@
 
-export interface NominationFilter {
+export interface PostulationFilter {
     userId?: number,
     necessityId?: number
 }
