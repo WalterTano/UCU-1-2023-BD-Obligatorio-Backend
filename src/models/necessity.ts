@@ -33,6 +33,11 @@ function dateRangeToConditions(filter: DateRange | undefined, column: string): (
 }
 
 function filterToConditions(filter: NecessityFilter): Condition[] {
+    const idsFilter: Condition | undefined =
+        filter.ids
+            ? { column: "id", operation: "IN", value: filter.ids }
+            : undefined;
+    
     const skillsFilter: Condition | undefined =
         filter.skills
             ? { column: "nombre_habilidad", operation: "IN", value: filter.skills }
@@ -51,7 +56,7 @@ function filterToConditions(filter: NecessityFilter): Condition[] {
                 ]
             } : undefined;
 
-    return [skillsFilter, ...startDateFilter, ...endDateFilter, searchTermFilter].filter(isNotUndefined);
+    return [idsFilter, skillsFilter, ...startDateFilter, ...endDateFilter, searchTermFilter].filter(isNotUndefined);
 }
 
 export async function getNecessities(filter: NecessityFilter): Promise<Necessity[]> {

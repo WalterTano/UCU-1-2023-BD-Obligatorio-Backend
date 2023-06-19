@@ -1,4 +1,5 @@
 export interface NecessityFilter {
+    ids?: number[],
     skills?: string[],
     startDate?: DateRange,
     endDate?: DateRange,

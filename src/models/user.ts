@@ -25,6 +25,11 @@ export async function selectAllFromUsers(query: Omit<SelectQuery, "table" | "col
 }
 
 function filterToConditions(filter: UserFilter): Condition[] {
+    const idsCondition: Condition | undefined =
+        filter.ids
+            ? { column: "ci", operation: "IN", value: filter.ids }
+            : undefined;
+
     const firstNameCondition: Condition | undefined =
         filter.firstName !== undefined
             ? { column: "nombre", operation: "LIKE", value: `%${filter.firstName}%` }
@@ -40,7 +45,7 @@ function filterToConditions(filter: UserFilter): Condition[] {
             ? { column: "nombre_habilidad", operation: "IN", value: filter.skills }
             : undefined;
 
-    return [firstNameCondition, lastNameCondition, skillCondition].filter(isNotUndefined);
+    return [idsCondition, firstNameCondition, lastNameCondition, skillCondition].filter(isNotUndefined);
 }
 
 export async function getUsers(filter: UserFilter): Promise<User[]> {
