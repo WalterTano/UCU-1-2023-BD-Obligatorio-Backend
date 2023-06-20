@@ -3,7 +3,6 @@ import { toRequestHandler } from "../helpers/controllers.helpers";
 import * as notificationModel from '../models/notification';
 import { getNumericQueryParam } from "../db/helpers/getQueryParams";
 
-// TODO: Add filter by user id
 export const getNotifications: RequestHandler = toRequestHandler(
     async (req) => {
         const userIdRes = getNumericQueryParam(req.query.userId, "Invalid user id");
