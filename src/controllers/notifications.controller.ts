@@ -7,9 +7,7 @@ import { getNumericQueryParam } from "../db/helpers/getQueryParams";
 export const getNotifications: RequestHandler = toRequestHandler(
     async (req) => {
         const userIdRes = getNumericQueryParam(req.query.userId, "Invalid user id");
-        if (!userIdRes.success) {
-            return userIdRes;
-        }
+        if (!userIdRes.success) return userIdRes;
         const userId = userIdRes.data;
 
         const notifications = await notificationModel.getNotifications({ userId });

@@ -3,23 +3,23 @@ import { Condition } from "../db/interfaces/condition";
 import { SelectQuery } from "../db/interfaces/selectQuery";
 import { isNotUndefined } from "../helpers/isNotUndefined";
 import { chainResult, mapResult, unwrapResult } from "../helpers/resultHelpers";
-import { DbNomination, Nomination, nominationFromDb } from "../interfaces/nomination";
-import { NominationFilter } from "../interfaces/nominationFilter";
-import { NominationId } from "../interfaces/nominationId";
-import { NominationTemplate, nominationTemplateToDb } from "../interfaces/nominationTemplate";
+import { DbPostulation, Postulation, postulationFromDb } from "../interfaces/postulation";
+import { PostulationFilter } from "../interfaces/postulationFilter";
+import { PostulationId } from "../interfaces/postulationId";
+import { PostulationTemplate, postulationTemplateToDb } from "../interfaces/postulationTemplate";
 import { Result } from "../types/result";
 
-async function selectAllFromNominations(query: Omit<SelectQuery, "table" | "columns">): Promise<DbNomination[]> {
+async function selectAllFromPostulations(query: Omit<SelectQuery, "table" | "columns">): Promise<DbPostulation[]> {
     const sqlRes = await dbConn.select({
         table: "postulacion",
         ...query
     });
 
-    const res: DbNomination[] = unwrapResult(sqlRes);
+    const res: DbPostulation[] = unwrapResult(sqlRes);
     return res;
 }
 
-function filterToConditions(filter: NominationFilter): Condition[] {
+function filterToConditions(filter: PostulationFilter): Condition[] {
     const necessityIdFilter: Condition | undefined = filter.necessityId
         ? { column: "id_necesidad", operation: "=", value: filter.necessityId }
         : undefined;
@@ -31,16 +31,16 @@ function filterToConditions(filter: NominationFilter): Condition[] {
     return [necessityIdFilter, userIdFilter].filter(isNotUndefined);
 }
 
-export async function getNominations(filter: NominationFilter): Promise<Nomination[]> {
-    const sqlRes = await selectAllFromNominations({
+export async function getPostulations(filter: PostulationFilter): Promise<Postulation[]> {
+    const sqlRes = await selectAllFromPostulations({
         conditions: filterToConditions(filter)
     });
 
-    return sqlRes.map(nominationFromDb);
+    return sqlRes.map(postulationFromDb);
 }
 
-export async function getNomination(id: NominationId): Promise<Nomination | undefined> {
-    const sqlRes = await selectAllFromNominations({
+export async function getPostulation(id: PostulationId): Promise<Postulation | undefined> {
+    const sqlRes = await selectAllFromPostulations({
         conditions: [
             { column: "id_necesidad", operation: "=", value: id.necessityId },
             { column: "ci_postulante", operation: "=", value: id.userId }
@@ -48,20 +48,20 @@ export async function getNomination(id: NominationId): Promise<Nomination | unde
     });
 
     const res = sqlRes.at(0);
-    return res && nominationFromDb(res);
+    return res && postulationFromDb(res);
 }
 
-export async function insertNomination(template: NominationTemplate): Promise<Result<void>> {
+export async function insertPostulation(template: PostulationTemplate): Promise<Result<void>> {
     const sqlRes = await dbConn.insert({
         table: "postulacion",
         idColumns: ["ci_postulante", "id_necesidad"],
-        values: nominationTemplateToDb(template)
+        values: postulationTemplateToDb(template)
     });
 
     return mapResult(sqlRes, _ => void 0);
 }
 
-export async function updateNomination(id: NominationId, newStatus: string): Promise<Result<number>> {
+export async function updatePostulation(id: PostulationId, newStatus: string): Promise<Result<number>> {
     const res = await dbConn.update({
         table: "postulacion",
         values: {
@@ -80,7 +80,7 @@ export async function updateNomination(id: NominationId, newStatus: string): Pro
     );
 }
 
-export async function deleteNomination(id: NominationId): Promise<Result<void>> {
+export async function deletePostulation(id: PostulationId): Promise<Result<void>> {
     const res = await dbConn.delete({
         table: "postulacion",
         conditions: [

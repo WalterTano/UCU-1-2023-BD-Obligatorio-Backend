@@ -1,4 +1,4 @@
-export interface NominationId {
+export interface PostulationId {
     necessityId: number,
     userId: number
 }
