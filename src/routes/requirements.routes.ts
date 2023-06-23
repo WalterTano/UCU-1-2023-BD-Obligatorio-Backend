@@ -12,4 +12,4 @@ router.post(BASE_ROUTE, controller.postRequirement);
 
 router.delete(`${BASE_ROUTE}/:skillId`, controller.deleteRequirement);
 
-export const necessityRouter: RequestHandler<{userId: string}> = router;
+export const requirementRouter: RequestHandler<{userId: string}> = router;
