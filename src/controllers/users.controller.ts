@@ -21,8 +21,6 @@ export const getUsers: RequestHandler = toRequestHandler(
         if (!skillsRes.success) return skillsRes;
         const skills = skillsRes.data;
 
-        console.log("1:", skills);
-
         const users = await userModel.getUsers({ ids, firstName, lastName, skills });
         return { success: true, data: users };
     }
