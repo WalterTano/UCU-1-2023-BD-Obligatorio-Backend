@@ -9,17 +9,17 @@ Notificacion:
 	Fecha
 */
 
-const BASE_ROUTE = '/notifs';
+const BASE_ROUTE = '/notifications';
 const router = Router();
 
 router.get(BASE_ROUTE, controller.getNotifications);
 
-router.get(`${BASE_ROUTE}/:notifId`, controller.getNotification);
+router.get(`${BASE_ROUTE}/:notificationId`, controller.getNotification);
 
 router.post(BASE_ROUTE, controller.postNotification);
 
-router.put(`${BASE_ROUTE}/:notifId`, controller.putNotification);
+router.put(`${BASE_ROUTE}/:notificationId`, controller.putNotification);
 
-router.delete(`${BASE_ROUTE}/:notifId`, controller.deleteNotification);
+router.delete(`${BASE_ROUTE}/:notificationId`, controller.deleteNotification);
 
-export { router as notifsRouter };
+export { router as notificationRouter };

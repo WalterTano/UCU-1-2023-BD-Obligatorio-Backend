@@ -60,7 +60,7 @@ export const putPostulation: RequestHandler<{ necessityId: string, userId: strin
             return { success: false, errorMessage: "Invalid user id" };
         }
 
-        const { newStatus } = req.body;
+        const { status: newStatus } = req.body;
         if (typeof newStatus !== "string") {
             return { success: false, errorMessage: "Invalid new status" };
         }
