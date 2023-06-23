@@ -30,10 +30,10 @@ app.use(cors());
 app.use(morgan('combined'));
 
 app.use(BASE_ROUTE, authRouter);
-app.use(BASE_ROUTE, validateJWT, usersRouter);
-app.use(BASE_ROUTE, validateJWT, skillsRouter);
-app.use(BASE_ROUTE, validateJWT, necessityRouter);
-app.use(BASE_ROUTE, validateJWT, postulationRouter);
-app.use(BASE_ROUTE, validateJWT, notificationRouter);
+app.use(BASE_ROUTE, usersRouter);
+app.use(BASE_ROUTE, skillsRouter);
+app.use(BASE_ROUTE, necessityRouter);
+app.use(BASE_ROUTE, postulationRouter);
+app.use(BASE_ROUTE, notificationRouter);
 
 app.listen(PORT, () => console.log(`listening on port ${PORT}`));
