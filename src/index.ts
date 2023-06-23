@@ -12,6 +12,7 @@ import { necessityRouter } from './routes/necessities.routes';
 import { postulationRouter } from './routes/postulations.routes';
 import { notificationRouter } from './routes/notifications.routes';
 import { requirementRouter } from './routes/requirements.routes';
+import { skillEnumRouter } from './routes/skillEnum.routes';
 
 const BASE_ROUTE = "/api/v1";
 const PORT = throwIfUndef(process.env.PORT, "PORT");
@@ -36,5 +37,6 @@ app.use(BASE_ROUTE, necessityRouter);
 app.use(BASE_ROUTE, postulationRouter);
 app.use(BASE_ROUTE, notificationRouter);
 app.use(BASE_ROUTE, requirementRouter);
+app.use(BASE_ROUTE, skillEnumRouter);
 
 app.listen(PORT, () => console.log(`listening on port ${PORT}`));

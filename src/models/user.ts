@@ -13,7 +13,7 @@ const columns = [
     "geo_activado", "es_admin", "latitud", "longitud"
 ];
 
-export async function selectAllFromUsers(query: Omit<SelectQuery, "table" | "columns">): Promise<DbUser[]> {
+async function selectAllFromUsers(query: Omit<SelectQuery, "table" | "columns">): Promise<DbUser[]> {
     const sqlRes = await dbConn.select({
         columns: columns,
         table: "usuario",
