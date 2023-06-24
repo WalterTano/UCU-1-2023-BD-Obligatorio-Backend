@@ -9,7 +9,7 @@ export function necessityTemplateToDb(info: NecessityTemplate): DbNecessityTempl
     return {
         ci_creador: info.userId,
         descripcion: info.description,
-        estado: 'Pendiente',
+        estado: info.status || 'Pendiente',
         latitud: info.location.latitude,
         longitud: info.location.longitude,
         fecha_inicio: info.startDate,

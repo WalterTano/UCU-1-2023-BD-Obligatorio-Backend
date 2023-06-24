@@ -48,3 +48,19 @@ export const deleteRequirement: RequestHandler<{ necessityId: string, skillId: s
         return res;
     }
 );
+
+export const deleteRequirements: RequestHandler<{ necessityId: string }> = toRequestHandler(
+    async (req) => {
+        const necessityId = parseInt(req.params.necessityId);
+        if (isNaN(necessityId)) {
+            return { success: false, errorMessage: "Invalid necessity id" };
+        }
+
+        if (!req.body?.skillNames || !Array.isArray(req.body.skillNames)) {
+            return { success: false, errorMessage: "Missing required array field in request's body: skillNames" }
+        }
+        
+        const res = await requirementModel.deleteRequirements(necessityId, req.body.skillNames);
+        return res;
+    }
+);
