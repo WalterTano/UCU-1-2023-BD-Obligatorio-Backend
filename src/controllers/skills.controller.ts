@@ -4,7 +4,7 @@ import * as skillModel from "../models/skill";
 
 export const getSkills: RequestHandler = toRequestHandler(
     async (_req) => {
-        const skills = skillModel.getAllSkills();
+        const skills = await skillModel.getAllSkills();
         return { success: true, data: skills };
     }
 );

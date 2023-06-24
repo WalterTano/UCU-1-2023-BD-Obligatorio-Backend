@@ -5,7 +5,7 @@ import { SkillOfUserId } from "../interfaces/skillOfUserId";
 import { SkillOfUserTemplate, skillOfUserTemplateToDb } from "../interfaces/skillOfUserTemplate";
 import { Result } from "../types/result";
 
-export async function getAllSkills(): Promise<string[]> {
+export async function getAllSkills(): Promise<{ name: string }[]> {
     const sqlRes = await dbConn.select({
         columns: ["nombre"],
         table: "habilidad"
@@ -13,7 +13,7 @@ export async function getAllSkills(): Promise<string[]> {
 
     const res: { nombre: string }[] = unwrapResult(sqlRes);
 
-    return res.map(v => v.nombre);
+    return res.map(v => ( { name: v.nombre } ));
 }
 
 export async function getSkillsOfUser(ci: number): Promise<SkillOfUser[]> {
