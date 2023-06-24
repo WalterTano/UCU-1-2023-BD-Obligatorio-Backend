@@ -14,20 +14,6 @@ export const getRequirements: RequestHandler<{ necessityId: string }> = toReques
     }
 );
 
-export const getRequirement: RequestHandler<{ necessityId: string, skillId: string }> = toRequestHandler(
-    async (req) => {
-        const necessityId = parseInt(req.params.necessityId);
-        if (isNaN(necessityId)) {
-            return { success: false, errorMessage: "Invalid necessity id" };
-        }
-        
-        const skillId = req.params.skillId;
-
-        const res = await requirementModel.hasRequirement(necessityId, skillId);
-        return { success: true, data: res };
-    }
-);
-
 export const postRequirement: RequestHandler<{ necessityId: string }> = toRequestHandler(
     async (req) => {
         const necessityId = parseInt(req.params.necessityId);

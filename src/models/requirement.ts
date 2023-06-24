@@ -27,18 +27,6 @@ export async function getRequirements(necessityId: number): Promise<string[]> {
     return res.map(v => v.nombre_habilidad).filter(isNotUndefined);
 }
 
-export async function hasRequirement(necessityId: number, skillName: string): Promise<boolean> {
-    const sqlRes = await selectPartialFromRequirements({
-        columns: [ "nombre_habilidad" ],
-        conditions: [
-            { column: "id_necesidad", operation: "=", value: necessityId },
-            { column: "nombre_habilidad", operation: "=", value: skillName }
-        ]
-    });
-
-    return sqlRes.length > 0;
-}
-
 export async function postRequirement(template: Requirement): Promise<Result<void>> {
     const sqlRes = await dbConn.insert({
         idColumns: ["id_necesidad", "nombre_habilidad"],
