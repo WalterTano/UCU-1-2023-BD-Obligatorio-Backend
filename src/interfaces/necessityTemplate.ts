@@ -9,12 +9,12 @@ export function necessityTemplateToDb(info: NecessityTemplate): DbNecessityTempl
     return {
         ci_creador: info.userId,
         descripcion: info.description,
-        estado: info.status,
+        estado: 'Pendiente',
         latitud: info.location.latitude,
         longitud: info.location.longitude,
         fecha_inicio: info.startDate,
-        fecha_fin: info.endDate,
-        fecha_solucionada: info.solvedDate,
+        fecha_fin: info.endDate || null,
+        fecha_solucionada: null,
         titulo: info.title,
     };
 }
