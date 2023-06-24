@@ -12,7 +12,7 @@ function jwtVerify(token: string): { ci: any, name: any } {
         throw new Error("Invalid token");
     }
 
-    return { ci: v1.ci, name: v1.name };
+    return { ci: v1.uid, name: v1.name };
 }
 
 export const validateJWT: RequestHandler = (req, res, next) => {

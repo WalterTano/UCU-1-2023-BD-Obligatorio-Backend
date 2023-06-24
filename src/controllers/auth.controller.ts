@@ -38,11 +38,20 @@ export const doAuth: RequestHandler = async (req, res) => {
 };
 
 export const renewToken: RequestHandler = async (req, res) => {
-    const { ci } = req.body;
+    const { ci: ciNum } = (req as any);
+
+    if (typeof ciNum !== "number") {
+        return res.status(500).json({
+            success: false,
+            message: 'Server error'
+        });
+    }
+
+    const ci = ciNum.toString();
 
     // Update this to use the new database.
     const user = await findByCI(ci);
-    
+
     if (!user) {
         res.status(404).json({
             success: false,
