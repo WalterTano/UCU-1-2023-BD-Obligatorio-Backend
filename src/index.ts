@@ -12,7 +12,6 @@ import { necessityRouter } from './routes/necessities.routes';
 import { postulationRouter } from './routes/postulations.routes';
 import { notificationRouter } from './routes/notifications.routes';
 import { requirementRouter } from './routes/requirements.routes';
-import { skillEnumRouter } from './routes/skillEnum.routes';
 import { validateJWT } from './middlewares/validateJWT.middleware';
 
 const BASE_ROUTE = "/api/v1";
@@ -41,6 +40,5 @@ app.use(BASE_ROUTE, validateJWT, necessityRouter);
 app.use(BASE_ROUTE, validateJWT, postulationRouter);
 app.use(BASE_ROUTE, validateJWT, notificationRouter);
 app.use(BASE_ROUTE, validateJWT, requirementRouter);
-app.use(BASE_ROUTE, validateJWT, skillEnumRouter);
 
 app.listen(PORT, () => console.log(`listening on port ${PORT}`));
