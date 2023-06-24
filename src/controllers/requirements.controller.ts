@@ -1,6 +1,7 @@
 import { RequestHandler } from "express";
 import { toRequestHandler } from "../helpers/controllers.helpers";
 import * as requirementModel from '../models/requirement';
+import { Requirement } from "../interfaces/requirement";
 
 export const getRequirements: RequestHandler<{ necessityId: string }> = toRequestHandler(
     async (req) => {
@@ -14,19 +15,22 @@ export const getRequirements: RequestHandler<{ necessityId: string }> = toReques
     }
 );
 
-export const postRequirement: RequestHandler<{ necessityId: string }> = toRequestHandler(
+export const postRequirements: RequestHandler<{ necessityId: string }> = toRequestHandler(
     async (req) => {
         const necessityId = parseInt(req.params.necessityId);
         if (isNaN(necessityId)) {
             return { success: false, errorMessage: "Invalid necessity id" };
         }
-        
-        const skillName = req.body.skillName;
-        if (typeof skillName !== "string") {
-            return { success: false, errorMessage: "Invalid skill name" };
+        if (!req.body?.skillNames || !Array.isArray(req.body.skillNames)) {
+            return { success: false, errorMessage: "Missing required array field in request's body: skillNames" }
         }
 
-        const res = await requirementModel.postRequirement({ necessityId, skillName });
+        const data: Requirement[] = req.body.skillNames.map((skillName: string) => ({
+            skillName,
+            necessityId
+        }));
+
+        const res = await requirementModel.postRequirements(data);
         return res;
     }
 );
