@@ -12,6 +12,8 @@ import { necessityRouter } from './routes/necessities.routes';
 import { postulationRouter } from './routes/postulations.routes';
 import { notificationRouter } from './routes/notifications.routes';
 import { requirementRouter } from './routes/requirements.routes';
+import { skillEnumRouter } from './routes/skillEnum.routes';
+import { validateJWT } from './middlewares/validateJWT.middleware';
 
 const BASE_ROUTE = "/api/v1";
 const PORT = throwIfUndef(process.env.PORT, "PORT");
@@ -30,11 +32,15 @@ app.use(cors());
 app.use(morgan('combined'));
 
 app.use(BASE_ROUTE, authRouter);
+
+// This is not protected, because if it is, no one can sign up.
+// Instead, each endpoint inside it (except for POST) is protected.
 app.use(BASE_ROUTE, usersRouter);
-app.use(BASE_ROUTE, skillsRouter);
-app.use(BASE_ROUTE, necessityRouter);
-app.use(BASE_ROUTE, postulationRouter);
-app.use(BASE_ROUTE, notificationRouter);
-app.use(BASE_ROUTE, requirementRouter);
+app.use(BASE_ROUTE, validateJWT, skillsRouter);
+app.use(BASE_ROUTE, validateJWT, necessityRouter);
+app.use(BASE_ROUTE, validateJWT, postulationRouter);
+app.use(BASE_ROUTE, validateJWT, notificationRouter);
+app.use(BASE_ROUTE, validateJWT, requirementRouter);
+app.use(BASE_ROUTE, validateJWT, skillEnumRouter);
 
 app.listen(PORT, () => console.log(`listening on port ${PORT}`));
