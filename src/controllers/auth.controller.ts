@@ -38,16 +38,21 @@ export const doAuth: RequestHandler = async (req, res) => {
 };
 
 export const renewToken: RequestHandler = async (req, res) => {
-    const { ci: ciNum } = (req as any);
-
-    if (typeof ciNum !== "number") {
-        return res.status(500).json({
+    const { ci } = (req as any);
+    if (!ci) {
+        return res.status(403).json({
             success: false,
-            message: 'Server error'
+            message: 'Authentication token not valid or expired.'
         });
     }
 
-    const ci = ciNum.toString();
+    const userId = parseInt(ci);
+    if (isNaN(userId)) {
+        return res.status(400).json({
+            success: false,
+            message: 'Invalid type for uid. Type must be numeric or a string with numeric value.'
+        });
+    }
 
     // Update this to use the new database.
     const user = await findByCI(ci);
