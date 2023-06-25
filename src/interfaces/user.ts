@@ -20,10 +20,11 @@ export interface User {
     email: string,
     isAdmin: boolean,
     address: LocalGeolocation,
-    geoConfig: GeoConfig
+    geoConfig: GeoConfig,
+    phoneNumbers?: number[]
 }
 
-export function userFromDb(info: DbUser): User {
+export function userFromDb(info: DbUser, numbers: number[]): User {
     return {
         id: info.ci,
         firstName: info.nombre,
@@ -37,20 +38,24 @@ export function userFromDb(info: DbUser): User {
         geoConfig: {
             active: info.geo_activado,
             maxDistance: info.geo_distancia
-        }
+        },
+        phoneNumbers: numbers
     };
 }
 
-export function userToDb(info: User): DbUser {
+export function userToDb(info: User): { info: DbUser, numbers?: number[] } {
     return {
-        ci: info.id,
-        nombre: info.firstName,
-        apellido: info.lastName,
-        email: info.email,
-        es_admin: info.isAdmin,
-        latitud: info.address.latitude,
-        longitud: info.address.longitude,
-        geo_activado: info.geoConfig.active,
-        geo_distancia: info.geoConfig.maxDistance
+        info: {
+            ci: info.id,
+            nombre: info.firstName,
+            apellido: info.lastName,
+            email: info.email,
+            es_admin: info.isAdmin,
+            latitud: info.address.latitude,
+            longitud: info.address.longitude,
+            geo_activado: info.geoConfig.active,
+            geo_distancia: info.geoConfig.maxDistance
+        },
+        numbers: info.phoneNumbers
     }
 }

@@ -7,6 +7,7 @@ import { SelectQuery } from '../db/interfaces/selectQuery';
 import { UserFilter } from '../interfaces/userFilter';
 import { Condition } from '../db/interfaces/condition';
 import { isNotUndefined } from '../helpers/isNotUndefined';
+import { fullUpdateTelNumbers, getTelNumbers, postTelNumbers } from './telNumber';
 
 const columns = [
     "ci", "nombre", "apellido", "email", "geo_distancia",
@@ -34,12 +35,12 @@ function filterToConditions(filter: UserFilter): Condition[] {
         filter.firstName !== undefined
             ? { column: "nombre", operation: "LIKE", value: `%${filter.firstName}%` }
             : undefined;
-    
+
     const lastNameCondition: Condition | undefined =
         filter.lastName !== undefined
             ? { column: "apellido", operation: "LIKE", value: `%${filter.lastName}%` }
             : undefined;
-    
+
     const skillCondition: Condition | undefined =
         filter.skills
             ? { column: "nombre_habilidad", operation: "IN", value: filter.skills }
@@ -55,8 +56,18 @@ export async function getUsers(filter: UserFilter): Promise<User[]> {
         conditions: filterToConditions(filter)
     });
 
-    const res: DbUser[] = unwrapResult(sqlRes);
-    return res.map(userFromDb);
+    const midRes: DbUser[] = unwrapResult(sqlRes);
+    console.log("1:", midRes);
+
+    const usersAndNumbers = await Promise.all(
+        midRes.map(
+            user => getTelNumbers(user.ci)
+                .then(numbers => ({ user, numbers }))
+        )
+    );
+
+    const res = usersAndNumbers.map(({user, numbers}) => userFromDb(user, numbers));
+    return res;
 }
 
 export async function findByCredentials(ci: string, hashpwd: string): Promise<User | undefined> {
@@ -68,7 +79,8 @@ export async function findByCredentials(ci: string, hashpwd: string): Promise<Us
     });
 
     const res = sqlRes.at(0);
-    return res && userFromDb(res);
+    const numbers = await getTelNumbers(parseInt(ci));
+    return res && userFromDb(res, numbers);
 }
 
 export async function findByCI(ci: string): Promise<User | undefined> {
@@ -79,42 +91,64 @@ export async function findByCI(ci: string): Promise<User | undefined> {
     });
 
     const res: DbUser | undefined = sqlRes.at(0);
-    return res && userFromDb(res);
+    const numbers = await getTelNumbers(parseInt(ci));
+    return res && userFromDb(res, numbers);
 }
 
 export async function newUser(user: UserTemplate): Promise<Result<number>> {
-    const dbUser = await userTemplateToDb(user);
+    const { info, numbers } = await userTemplateToDb(user);
 
-    const result = await dbConn.insert({
+    const res1 = await dbConn.insert({
         table: "usuario",
         idColumns: ["ci"],
-        values: dbUser
+        values: info
     });
+    if (!res1.success) {
+        return res1;
+    }
+    const ci: number = res1.data.ci;
 
-    return mapResult(result, data => data.ci);
+    if (numbers == undefined) {
+        return res1;
+    }
+
+    const res2 = await postTelNumbers(ci, numbers);
+    return mapResult(res2, () => ci);
 }
 
-// It's not the same that an object has no attribute,
-// or that it has that attribute with the value 'undefined'
 export async function updateUser(ci: number, user: Omit<User, "id">): Promise<Result<number>> {
-    const dbUser = userToDb({ ...user, id: 0 });
+    const { info, numbers } = userToDb({ ...user, id: 0 });
 
-    const dbInput: Partial<DbUser> = { ...dbUser };
+    const dbInput: Partial<DbUser> = { ...info };
     delete dbInput.ci;
 
-    const res = await dbConn.update({
+    const res1 = await dbConn.update({
         table: "usuario",
-        values: dbUser,
+        values: dbInput,
         conditions: [
             { column: "ci", operation: "=", value: ci }
         ]
     });
 
-    return chainResult(res,
-        data => data == undefined
-            ? { success: false, errorMessage: "At least one field must be included in the template" }
-            : { success: true, data }
-    );
+    if (!res1.success) {
+        return res1;
+    } else if (res1.data == undefined) {
+        return {
+            success: false,
+            errorMessage: "At least one field must be included in the template"
+        };
+    }
+
+    if (numbers == undefined) {
+        return res1 as Result<number>;
+    }
+
+    const res2 = await fullUpdateTelNumbers(ci, numbers);
+    if (!res2.success) {
+        return res2;
+    }
+
+    return res1 as Result<number>;
 }
 
 export async function deleteUser(ci: number): Promise<Result<void>> {
