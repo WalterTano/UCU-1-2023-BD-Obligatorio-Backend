@@ -23,20 +23,24 @@ export interface UserTemplate {
     isAdmin: boolean | null,
     address: LocalGeolocation,
     geoConfig: GeoConfig | null,
-    password: string
+    password: string,
+    telephoneNumbers?: number[]
 }
 
-export async function userTemplateToDb(info: UserTemplate): Promise<DbUserTemplate> {
+export async function userTemplateToDb(info: UserTemplate): Promise<{ info: DbUserTemplate, numbers?: number[] }> {
     return {
-        ci: info.id,
-        nombre: info.firstName,
-        apellido: info.lastName,
-        email: info.email,
-        es_admin: info.isAdmin || false,
-        geo_activado: info.geoConfig?.active || false,
-        geo_distancia: info.geoConfig?.maxDistance || 0,
-        hashpwd: await encrypt(info.password),
-        latitud: info.address.latitude,
-        longitud: info.address.longitude
+        info: {
+            ci: info.id,
+            nombre: info.firstName,
+            apellido: info.lastName,
+            email: info.email,
+            es_admin: info.isAdmin || false,
+            geo_activado: info.geoConfig?.active || false,
+            geo_distancia: info.geoConfig?.maxDistance || 0,
+            hashpwd: await encrypt(info.password),
+            latitud: info.address.latitude,
+            longitud: info.address.longitude
+        },
+        numbers: info.telephoneNumbers
     };
 }

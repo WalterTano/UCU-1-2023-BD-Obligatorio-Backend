@@ -1,6 +1,6 @@
 import dbConn from "../configs/db.config";
-import { isNotUndefined } from "../helpers/isNotUndefined";
-import { unwrapResult } from "../helpers/resultHelpers";
+import { chainResult, mapResult, unwrapResult } from "../helpers/resultHelpers";
+import { Result } from "../types/result";
 
 export async function getTelNumbers(userId: number): Promise<number[]> {
     const sqlRes = await dbConn.select({
@@ -15,7 +15,7 @@ export async function getTelNumbers(userId: number): Promise<number[]> {
     return res.map(r => r.telefono);
 }
 
-async function postTelNumber(userId: number, telephone: number): Promise<number | null> {
+async function postTelNumber(userId: number, telephone: number): Promise<Result<void>> {
     const sqlRes = await dbConn.insert({
         idColumns: ["telefono", "ci_usuario"],
         table: "usuario_telefono",
@@ -25,33 +25,36 @@ async function postTelNumber(userId: number, telephone: number): Promise<number 
         }
     });
 
-    return sqlRes.success ? telephone : null;
+    return mapResult(sqlRes, () => void 0);
 }
 
-export async function postTelNumbers(userId: number, telephones: number[]): Promise<number[]> {
+export async function postTelNumbers(userId: number, telephones: number[]): Promise<Result<void>> {
     const results = await Promise.all(
         telephones.map(tel => postTelNumber(userId, tel))
     );
     
-    return results.filter(isNotUndefined);
+    return results.reduce(
+        (acc, res) => chainResult(acc, () => res),
+        { success: true, data: void 0 }
+    );
 }
 
-async function deleteTelNumber(userId: number, telephone: number): Promise<number | null> {
+export async function deleteAllTelNumbers(userId: number): Promise<Result<void>> {
     const sqlRes = await dbConn.delete({
         table: "usuario_telefono",
         conditions: [
-            { column: "ci_usuario", operation: "=", value: userId },
-            { column: "telefono", operation: "=", value: telephone }
+            { column: "ci_usuario", operation: "=", value: userId }
         ]
     });
 
-    return sqlRes.success ? telephone : null;
-}
+    return mapResult(sqlRes, () => void 0);
+};
 
-export async function deleteTelNumbers(userId: number, telephones: number[]): Promise<number[]> {
-    const results = await Promise.all(
-        telephones.map(tel => deleteTelNumber(userId, tel))
-    );
-    
-    return results.filter(isNotUndefined);
+export async function fullUpdateTelNumbers(userId: number, newNumbers: number[]): Promise<Result<void>> {
+    const res1 = await deleteAllTelNumbers(userId);
+    if (!res1.success) {
+        return res1;
+    }
+
+    return await postTelNumbers(userId, newNumbers);
 }
