@@ -24,7 +24,7 @@ export interface UserTemplate {
     address: LocalGeolocation,
     geoConfig: GeoConfig | null,
     password: string,
-    telephoneNumbers?: number[]
+    phoneNumbers?: number[]
 }
 
 export async function userTemplateToDb(info: UserTemplate): Promise<{ info: DbUserTemplate, numbers?: number[] }> {
@@ -41,6 +41,6 @@ export async function userTemplateToDb(info: UserTemplate): Promise<{ info: DbUs
             latitud: info.address.latitude,
             longitud: info.address.longitude
         },
-        numbers: info.telephoneNumbers
+        numbers: info.phoneNumbers
     };
 }

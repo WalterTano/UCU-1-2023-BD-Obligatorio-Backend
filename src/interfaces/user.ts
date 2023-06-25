@@ -21,7 +21,7 @@ export interface User {
     isAdmin: boolean,
     address: LocalGeolocation,
     geoConfig: GeoConfig,
-    telephoneNumbers?: number[]
+    phoneNumbers?: number[]
 }
 
 export function userFromDb(info: DbUser, numbers: number[]): User {
@@ -39,7 +39,7 @@ export function userFromDb(info: DbUser, numbers: number[]): User {
             active: info.geo_activado,
             maxDistance: info.geo_distancia
         },
-        telephoneNumbers: numbers
+        phoneNumbers: numbers
     };
 }
 
@@ -56,6 +56,6 @@ export function userToDb(info: User): { info: DbUser, numbers?: number[] } {
             geo_activado: info.geoConfig.active,
             geo_distancia: info.geoConfig.maxDistance
         },
-        numbers: info.telephoneNumbers
+        numbers: info.phoneNumbers
     }
 }
