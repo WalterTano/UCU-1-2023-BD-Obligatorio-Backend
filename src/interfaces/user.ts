@@ -20,7 +20,7 @@ export interface User {
     email: string,
     isAdmin: boolean,
     address: LocalGeolocation,
-    geoConfig: GeoConfig,
+    geoConfiguration: GeoConfig,
     phoneNumbers?: number[]
 }
 
@@ -35,7 +35,7 @@ export function userFromDb(info: DbUser, numbers: number[]): User {
             latitude: info.latitud,
             longitude: info.longitud
         },
-        geoConfig: {
+        geoConfiguration: {
             active: info.geo_activado,
             maxDistance: info.geo_distancia
         },
@@ -53,8 +53,8 @@ export function userToDb(info: User): { info: DbUser, numbers?: number[] } {
             es_admin: info.isAdmin,
             latitud: info.address.latitude,
             longitud: info.address.longitude,
-            geo_activado: info.geoConfig.active,
-            geo_distancia: info.geoConfig.maxDistance
+            geo_activado: info.geoConfiguration.active,
+            geo_distancia: info.geoConfiguration.maxDistance
         },
         numbers: info.phoneNumbers
     }

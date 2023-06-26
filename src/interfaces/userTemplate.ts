@@ -22,7 +22,7 @@ export interface UserTemplate {
     email: string,
     isAdmin: boolean | null,
     address: LocalGeolocation,
-    geoConfig: GeoConfig | null,
+    geoConfiguration: GeoConfig | null,
     password: string,
     phoneNumbers?: number[]
 }
@@ -35,8 +35,8 @@ export async function userTemplateToDb(info: UserTemplate): Promise<{ info: DbUs
             apellido: info.lastName,
             email: info.email,
             es_admin: info.isAdmin || false,
-            geo_activado: info.geoConfig?.active || false,
-            geo_distancia: info.geoConfig?.maxDistance || 0,
+            geo_activado: info.geoConfiguration?.active || false,
+            geo_distancia: info.geoConfiguration?.maxDistance || 0,
             hashpwd: await encrypt(info.password),
             latitud: info.address.latitude,
             longitud: info.address.longitude
