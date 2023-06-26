@@ -45,17 +45,19 @@ export async function getSkillOfUser(ci: number, skillId: string): Promise<Skill
     return res && skillOfUserFromDb(res);
 }
 
-export async function newSkillOfUser(ci: number, info: SkillOfUserTemplate): Promise<Result<SkillOfUserId>> {
+export async function newSkillsOfUser(ci: number, info: SkillOfUserTemplate[]): Promise<Result<SkillOfUserId[]>> {
     const sqlRes = await dbConn.insert({
         idColumns: ["nombre_habilidad", "ci"],
         table: "usuario_tiene_habilidad",
-        values: skillOfUserTemplateToDb(ci, info)
+        values: info.map(i => skillOfUserTemplateToDb(ci, i))
     });
 
-    return mapResult(sqlRes, () => ({
-        skillName: info.skillName,
-        userId: ci
-    }));
+    return mapResult(sqlRes, () => {
+        return info.map(i => ({ 
+            skillName: i.name,
+            userId: ci
+        }));
+    });
 }
 
 export async function updateSkillOfUser(id: SkillOfUserId, newDescripcion: string | null): Promise<Result<number>> {
@@ -83,6 +85,22 @@ export async function deleteSkillOfUser(id: SkillOfUserId): Promise<Result<void>
         conditions: [
             { column: "ci", operation: "=", value: id.userId },
             { column: "nombre_habilidad", operation: "=", value: id.skillName }
+        ]
+    });
+
+    return chainResult(sqlRes,
+        data => data > 0
+            ? { success: true, data: void 0 }
+            : { success: false, errorMessage: "Record not found" }
+    );
+}
+
+export async function deleteSkillsOfUser(userId: number, skillNames: string[]): Promise<Result<void>> {
+    const sqlRes = await dbConn.delete({
+        table: "usuario_tiene_habilidad",
+        conditions: [
+            { column: "ci", operation: "=", value: userId },
+            { column: "nombre_habilidad", operation: "IN", value: skillNames }
         ]
     });
 

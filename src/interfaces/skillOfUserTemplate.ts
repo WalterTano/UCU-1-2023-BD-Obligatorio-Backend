@@ -5,14 +5,14 @@ export interface DbSkillOfUserTemplate {
 }
 
 export interface SkillOfUserTemplate {
-    skillName: string,
+    name: string,
     description?: string | null
 }
 
 export function skillOfUserTemplateToDb(ci: number, info: SkillOfUserTemplate): DbSkillOfUserTemplate {
     return {
         ci: ci,
-        nombre_habilidad: info.skillName,
+        nombre_habilidad: info.name,
         descripcion: info.description || null
     };
 }
