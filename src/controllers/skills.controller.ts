@@ -40,22 +40,50 @@ export const getSkillByUser: RequestHandler<{ userId: string, skillId: string }>
     }
 );
 
-export const postSkill: RequestHandler<{ userId: string }> = toRequestHandler(
+export const postSkills: RequestHandler<{ userId: string }> = toRequestHandler(
     async (req) => {
         const userId = parseInt(req.params.userId);
         if (isNaN(userId)) {
             return { success: false, errorMessage: "Invalid CI" };
         }
 
-        const { descripcion, habilidad } = req.body;
-        if (typeof descripcion != "string" && descripcion !== null) {
-            return { success: false, errorMessage: "Invalid description" };
-        }
-        if (typeof habilidad != "string") {
-            return { success: false, errorMessage: "Invalid skill" };
+        let skills = req.body;
+        
+        if (!Array.isArray(skills)) {
+            skills = [ req.body ];
         }
 
-        const res = await skillModel.newSkillOfUser(userId, { description: descripcion, skillName: habilidad });
+        const badSkills: any[] = [];
+        const newSkills: any[] = [];
+        skills.forEach((skill: any) => {
+            if (typeof skill.description !== "string" && skill.description !== null) {
+                badSkills.push({
+                    success: false,
+                    skillName: skill.name,
+                    descripcion: skill.description,
+                    userId: userId,
+                    errorMessage: "Invalid description"
+                });
+                return;
+            }
+            if (typeof skill.name !== "string") {
+                badSkills.push({
+                    success: false, 
+                    skillName: skill.name,
+                    descripcion: skill.description,
+                    userId: userId,
+                    errorMessage: "Invalid skill"
+                });
+                return;
+            }
+            newSkills.push(skill)
+        });
+
+        const res = await skillModel.newSkillsOfUser(userId, newSkills);
+        if (res.success) {
+            res.data = [ res.data, ...badSkills ];
+        }
+
         return res;
     }
 );
@@ -89,6 +117,22 @@ export const deleteSkill: RequestHandler<{ userId: string, skillId: string }> = 
         const skillId = req.params.skillId;
 
         const res = skillModel.deleteSkillOfUser({ userId, skillName: skillId });
+        return res;
+    }
+);
+
+export const deleteSkills: RequestHandler<{ userId: string }> = toRequestHandler(
+    async (req) => {
+        const userId = parseInt(req.params.userId);
+        if (isNaN(userId)) {
+            return { success: false, errorMessage: "Invalid CI" };
+        }
+
+        if (!req.body || !Array.isArray(req.body)) {
+            return { success: false, errorMessage: "Missing required array field in request's body: skillNames" }
+        }
+
+        const res = skillModel.deleteSkillsOfUser(userId, req.body);
         return res;
     }
 );

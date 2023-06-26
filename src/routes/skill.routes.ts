@@ -14,10 +14,12 @@ router.get(USER_LINKED_BASE_ROUTE, controller.getSkillsByUser);
 
 router.get(`${USER_LINKED_BASE_ROUTE}/:skillId`, controller.getSkillByUser);
 
-router.post(USER_LINKED_BASE_ROUTE, controller.postSkill);
+router.post(USER_LINKED_BASE_ROUTE, controller.postSkills);
 
 router.put(`${USER_LINKED_BASE_ROUTE}/:skillId`, controller.putSkill);
 
 router.delete(`${USER_LINKED_BASE_ROUTE}/:skillId`, controller.deleteSkill);
+
+router.delete(USER_LINKED_BASE_ROUTE, controller.deleteSkills);
 
 export const skillsRouter: RequestHandler<{userId: string}> = router;
